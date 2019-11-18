@@ -19,17 +19,23 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       {% if user.is_authenticated %}
-      <li class="nav-item active">
-        <a class="nav-link" href="/lista">Ultimos registros <img src="{% static 'images/register_icon.png' %}" class="icon_menu"></a>
+      <li>
+        <a class="navbar-brand" href="/lista">
+            <img src="{% static 'images/register_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+            Ultimos registros
+        </a>
       </li>
       <!--
       <li class="nav-item active">
         <a class="nav-link" href="/accounts/myaccount">Minha conta</a>
       </li>
       -->
-      <li class="nav-item">
-        <a class="nav-link" href="/accounts/logout" onclick="return confirm('Deseja realmente sair ?')">Sair <img src="{% static 'images/logout_icon.png' %}" class='icon_menu' ></a>
-      </li>
+      <li>
+          <a class="navbar-brand" href="/accounts/logout" onclick="return confirm('Deseja realmente sair ?')">
+              <img src="{% static 'images/logout_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+              Sair
+          </a>
+      </li>     
       {% else %}
   
       {% endif %}
