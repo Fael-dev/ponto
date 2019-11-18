@@ -5,5 +5,5 @@ consegui captar informações de cartões ou quaisquer objetos com um chip senso
 que, ao serem detectados pelo sistema, seu código, junto com sua antena, servidor e horário, serão
 devidamente tratados e encaminhados para um banco de dados do sistema e renderizados devidamente.
 
-Repositório Pedro
+Repositório GEOMK | Aironnet
 

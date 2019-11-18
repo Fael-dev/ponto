@@ -8,7 +8,6 @@ host_name = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
 
 def sendData(antena_id, code):
-
 	url = 'http://127.0.0.1:8000/'
 	result = requests.Session()
 	result.get(url)
