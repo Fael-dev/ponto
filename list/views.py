@@ -12,7 +12,6 @@ from django.template.loader import get_template
 from django.http import HttpResponse
 
 
-
 '''
 	Função 'HOMEPAGE' recebe as informações enviadas pela antena e 
 	faz os tratamentos certos antes de salvar.

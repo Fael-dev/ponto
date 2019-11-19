@@ -67,7 +67,9 @@
 	height: auto;
 	vertical-align: middle;
 }
-
+.collapse{
+	margin-left: 50px;
+}
 /* ========== RODAPÉ ============= */
 
 .footer{
