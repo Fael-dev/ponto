@@ -16,9 +16,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="/"> <img src="{% static 'images/logo1.ico' %}" class="logo_air"></a>
+  {% if user.is_authenticated %}
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      {% if user.is_authenticated %}
       <li>
         <a class="navbar-brand" href="/lista">
             <img src="{% static 'images/register_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -30,17 +30,15 @@
         <a class="nav-link" href="/accounts/myaccount">Minha conta</a>
       </li>
       -->
-      <li>
-          <a class="navbar-brand" href="/accounts/logout" onclick="return confirm('Deseja realmente sair ?')">
-              <img src="{% static 'images/logout_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-              Sair
-          </a>
-      </li>     
-      {% else %}
-  
-      {% endif %}
     </ul>
   </div>
+  <a class="navbar-brand" href="/accounts/logout" onclick="return confirm('Deseja realmente sair ?')">
+    <img src="{% static 'images/logout_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+    Sair
+  </a>
+  {% else %}
+  
+  {% endif %}
 </nav>
 <!-- <div class="tab-content" id="pills-tabContent">
   <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">...</div>
