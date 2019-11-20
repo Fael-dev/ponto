@@ -8,10 +8,10 @@ devidamente tratados e encaminhados para um banco de dados do sistema e renderiz
 Repositório GEOMK | Aironnet
 
 Requerimentos:
-
-django 
-django-crispy-forms
-xhtml2pdf
-django-xhtml2pdf
+|
+django |
+django-crispy-forms |
+xhtml2pdf |
+django-xhtml2pdf |
 
 
