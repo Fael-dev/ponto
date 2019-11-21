@@ -15,3 +15,10 @@ xhtml2pdf |
 django-xhtml2pdf |
 
 
+Alterar banco, de objetos, para pessoas.
+Adaptar sistema RFID de objetos para ponto de trabalho.
+Gerar PDF de acordo com planilha.
+
+
+
+

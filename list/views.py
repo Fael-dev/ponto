@@ -218,3 +218,8 @@ def gerar_pdf(request):
 	pdf = render_to_pdf('relatorio.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')
+
+def pdf(request):
+	template_name = 'pdf.html'
+	pdf = render_to_pdf(template_name)
+	return HttpResponse(pdf, content_type='application/pdf')
