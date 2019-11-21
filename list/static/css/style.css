@@ -172,7 +172,7 @@ a:hover{
 /* button recolor */
 .jumbotron{
   text-align: center;
-  background-color:lightslategrey;
+  background-color:#ccc;
   top:50px;
 }
 .logo_air{
