@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 urlpatterns = [
 	path('', views.homepage, name='homepage'),
+	path('post/', views.post, name='post'),
 	path('lista/', views.listar, name='listar'),
 	path('lista/delete/<int:id>', views.deleteObj, name='delete-teste'),
 	path('lista/cadastro/<int:id>', views.add, name='add-objeto'),

@@ -17,7 +17,6 @@ from django.http import HttpResponse
 	faz os tratamentos certos antes de salvar.
 '''
 def homepage(request):
-
 	template_name = 'homepage.html'
 	log = datetime.now()
 
@@ -189,8 +188,6 @@ def historico(request, code):
 	template_name = 'historico.html'
 	return render(request, template_name, {'hist':hist, 'code':code, 'total':total })
 
-
-
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
 '''
@@ -223,3 +220,61 @@ def pdf(request):
 	template_name = 'pdf.html'
 	pdf = render_to_pdf(template_name)
 	return HttpResponse(pdf, content_type='application/pdf')
+
+def post(request):
+	template_name = 'pdf.html'
+	log = datetime.now()
+
+	if request.method == 'POST':
+		form = ObjForm(request.POST)
+		fml = form.save(commit=False)
+		obj1 = Objeto.objects.filter(code=fml.code).first()
+		# Verifica se existe algum objeto cadastrado com esse código
+		if obj1:
+			# Pega a data do objeto, converte para TIMESTAMP e subtrai pela data atual
+		    timestamp = datetime.timestamp(obj1.date)
+		    timesnow = datetime.timestamp(datetime.now())
+		    result = (timesnow - timestamp)
+		    print('Resultado: {} do Código: {} '.format(result, obj1.code))
+			
+		    # Se o resultado desse subtração for maior que 60(1 minuto) ele pode cadastrar
+		    if result > 60:
+		    	# Adicionando o atual objeto ao Historico antes de atualizá-lo
+		    	hist = Historico()
+		    	hist.server = fml.server
+		    	hist.antena = fml.antena
+		    	hist.code = fml.code
+		    	hist.objeto = obj1.objeto
+		    	hist.date = fml.date
+		    	hist.save() 
+		    	# Atualizando o objeto anterior, pelo que acabou de receber
+		    	obj = Objeto.objects.get(code=fml.code)
+		    	obj.server = fml.server
+		    	obj.antena = fml.antena
+		    	obj.code = fml.code
+		    	obj.date = datetime.now()
+		    	obj.save()
+		    	return redirect('/') 
+
+		    # Se o resultado for menor que 1 minuto
+		    else:
+		    	return redirect('/')
+
+		# Se o objeto não existe, ele é cadastrado no ELSE
+		else:
+			hist = Historico()
+			hist.server = fml.server
+			hist.antena = fml.antena
+			hist.code = fml.code
+			hist.date = datetime.now()
+			hist.save()
+			fml.date = datetime.now()
+			fml.save()
+
+		return redirect('/')
+	
+	# Se o Formulário não for o método POST ele vem pro ELSE
+	else:
+		form = ObjForm()
+
+	return render(request, template_name, {'log':log})

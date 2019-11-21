@@ -1,3 +1,4 @@
+{% load static %}
 <html>
 <head>
 <style>
@@ -5,29 +6,63 @@
         size: a4 portrait;
         @frame header_frame {           /* Static Frame */
             -pdf-frame-content: header_content;
-            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+            left: 50pt; width: 512pt; top: 50pt; height: 200pt;
         }
         @frame content_frame {          /* Content Frame */
-            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+            left: 20pt; width: 560pt; top: 180pt; height: 632pt;
         }
         @frame footer_frame {           /* Another static Frame */
             -pdf-frame-content: footer_content;
             left: 50pt; width: 512pt; top: 772pt; height: 20pt;
         }
     }
+    .table td{
+        text-align: center;
+        padding:5px;
+    }
+    .table th{
+        padding:5px;
+        text-align: center;
+        background-color:darkseagreen;
+    }
+    .aironnet{
+        background-color:darkgray;
+        padding:10px;
+        margin-bottom: 30px;
+        color: brown;
+        font-size: 20px;
+        text-align: center;
+    }
+
 </style>
 </head>
 <body>
     <!-- ========== Content HEADER =========== -->
-    <div id="header_content">Cabeçalho</div>
-
+    <div id="header_content">
+    <div class="aironnet">
+        Aironnet Systems
+    </div>
+        <table class="tb_head">
+            <tr><td>Nome</td><td> {{ user.username }} </td><td>Matrícula: </td><td>{{ user.pk }}</td></tr> 
+            <tr><td>Função</td><td>Dev</td><td> Data de Admissão: </td><td>08/09</td></tr>
+            <tr><td>Assinatura:</td><td></td></tr>
+        </table>
+    </div>
+    <hr>
     <div class="main_content">
-
+        <table class="table">
+            <tr>
+                <th>Data</th> <th>Entrada</th> <th>Saída</th> <th>Intervalo</th> <th>Horas Trabalhadas</th> <th>Carga Horária</th> <th>Horas Extras</th> <th>Total de Horas</th>
+            </tr>
+            <tr>
+                <td>02/12/2019</td> <td>12:00</td> <td>17:00</td> <td>1:00</td> <td>4:00</td> <td>4:00</td> <td>0:00</td> <td>4:00</td>
+            </tr>
+        </table>
     </div>
 
     <!-- Content for Static Frame 'footer_frame' -->
     <div id="footer_content">
-        (c) - Página <pdf:pagenumber>
+        Aironnet - Página <pdf:pagenumber>
         de <pdf:pagecount>
     </div>
 </body>
