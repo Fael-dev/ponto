@@ -56,9 +56,9 @@
                           <select name="selectcode" id="selectcode" class="form-control">
                             <option value="todos">Todos os códigos</option>
                             {% for obj in obj %}
-                              <option value="{{ obj.code }}">Apenas: {{ obj.code }}  -  
-                                {% if obj.objeto %}
-                                  {{ obj.objeto }}
+                              <option value="{{ obj.code }}">Apenas: {{ obj.codigo }}  -  
+                                {% if obj.nome %}
+                                  {{ obj.nome }}
                                 {% else %} <b>Object not found</b>{% endif %}
                                 </option>
                             {% endfor %}
@@ -79,19 +79,7 @@
                           <span> *Código(Obrigatório)</span>
                         </div>
                     </div>
-                   <!--
-                    <div class="card" style="width: 100%;">
-                      <div class="card-body">
-                        <h5 class="card-title"><b> Período:</b></h5>
-                        <select name="selectperiodo" id="selectperiodo" class="form-control">
-                            <option value="todos">Todos os períodos</option>
-                              {% for hist in hist %}
-                              <option value="{{ hist.date }}">{{ hist.date }} - {{ hist.code }}</option>
-                              {% endfor %}
-                        </select>
-                    </div>
-                    </div>
-                   -->
+
               </div>
               <div class="modal-footer">
                   <button type="button" class="badge badge-secundary" data-dismiss="modal"><img src="{% static 'images/excluir.png' %}" class="icon_menu">Fechar</button>
@@ -103,59 +91,32 @@
     </form>
   
     <button type="button" class="badge badge-info" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
-    <span class="badge badge-dark"> <b> Com Objetos: {{ com }}</b></span>
+    <span class="badge badge-dark"> <b> Funcionários: {{ com }}</b></span>
     <span class="badge badge-dark"> <b> Total de Objetos: {{ total }}</b></span>
-    <span class="badge badge-dark"> <b> Sem Objetos: {{ sem }}</b></span>
-<!--
-   <div class="modal fade" id="modalExemplo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Excluir Registro </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Ao excluir o registro, o historico do mesmo será apagado.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="badge badge-dark" data-dismiss="modal">Cancelar</button>
-          <button type="button" class="badge badge-light"><a href="delete/{{obj.id}}">Excluir</a></button>
-        </div>
-      </div>
-    </div>
-</div>
--->
+    <span class="badge badge-dark"> <b> Cartão sem Funcionário: {{ sem }}</b></span>
   </center>
     <table class="table">
       <tr align="middle" id="titulos">
-        <th>Servidor</th> <th>Antena</th>
-        <th>Código</th> <th>Data & Hora</th> 
-        <th>Objeto</th><th>Deletar</th><th>Históricos</th>
+        <th>Funcionário</th> <th>Funcão</th><th>Responsável</th>
+        <th>Código</th> <th>Data admissão</th> 
+        <th>Deletar</th><th>Históricos</th>
       </tr>
 
           {% for obj in obj %}
-          {% if obj.objeto %}
+          {% if obj.nome %}
               <tr align="middle" class="hover">
-                <td> {{ obj.server }} </td> <td> {{ obj.antena }} </td>
-                <td>  {{ obj.code }}  </td> <td> {{ obj.date }}  </td>
-                <form action="desvincular/{{ obj.id }}/" method="POST">
-                  {% csrf_token %}
-                  <td> 
-                    <button class="desvincular" type="submit" title="Desvincular objeto" onclick="return confirm('Desvincular objeto do código ?')">{{ obj.objeto }}</button>
-                  </td>
-                </form>
+                <td> <a href="editar/{{ obj.id }}"> {{ obj.nome }} </a></td> <td> {{ obj.funcao }} </td><td>{{ obj.responsavel }} </td>
+                <td>  {{ obj.codigo }}  </td> <td> {{ obj.data_admissao }}  </td>
                 <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/excluir.png' %}" class="btn-img"></button> </a></td>
-                <td><a href="historico/{{obj.code}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
+                <td><a href="historico/{{obj.codigo}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
               </tr>
         
           {% else %}
               <tr align="middle" bgcolor="#ffabab"  class="hover-so">
-                <td> {{ obj.server }} </td> <td> {{ obj.antena }} </td>
-                <td>  {{ obj.code }}  </td> <td> {{ obj.date }}  </td><td><a href="cadastro/{{ obj.id }}"><button class="btn-acao" title="Adicionar Objeto"><img src="{% static 'images/add.png' %}" class="btn-img"></button></a></td>
+                <td> <a href="cadastro/{{ obj.id }}"><button class="btn-acao" title="Adicionar Objeto"><img src="{% static 'images/add.png' %}" class="btn-img"></button></a></td> <td> {{ obj.funcao }} </td><td>{{ obj.responsavel }}</td>
+                <td>  {{ obj.codigo }}  </td> <td> {{ obj.data_admissao }}  </td>
                 <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/excluir.png' %}" class="btn-img" ></button></a> </td>
-                <td><a href="historico/{{obj.code}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
+                <td><a href="historico/{{obj.codigo}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
               </tr>
              
           {% endif %}

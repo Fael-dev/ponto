@@ -3,7 +3,7 @@ import random
 import socket
 
 antena = random.randint(1,5)
-code = random.randint(1,10)
+code = random.randint(100,500)
 host_name = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
 
@@ -20,9 +20,7 @@ def sendData(antena_id, code):
 
 	dados = {
 	 'csrfmiddlewaretoken':csrftoken,
-	 'server': host_ip,
-	 'antena': str(antena_id), 
-	 'code': str(code),
+	 'codigo': str(code),
 	}
 
 	response = result.post(url, data=dados)

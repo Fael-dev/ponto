@@ -13,19 +13,13 @@
 	</div>
 	<!--<button class="btn-pdf"><a href="{{ code }}/pdf">Gerar PDF</a></button>-->
 	<tr>
-		<th>Servidor</th> <th>Antena</th> <th>Código</th> <th>Objeto</th>
-		<th>Verificado em</th>
+		<th>Entrada</th> <th>Saida</th> <th>Intervalo</th> <th>Hora extra</th>
+		<th>Data</th>
 	</tr>
-	{% for hist in hist %}
-		{% if hist.objeto %}		
-			<tr class="hover">
-				<td>{{hist.server}}</td> <td>{{hist.antena}}</td> <td>{{hist.code}}</td> <td>{{hist.objeto}}</td><td>{{ hist.date }}</td>
-			</tr>
-		{% else %}
-			<tr class="hover">
-					<td>{{hist.server}}</td> <td>{{hist.antena}}</td> <td>{{hist.code}}</td> <td>Sem Objeto</td><td>{{ hist.date }}</td>
-			</tr>
-		{% endif %}
+	{% for hist in hist %}	
+		<tr class="hover">
+			<td>{{hist.entrada}}</td> <td>{{hist.saida}}</td> <td>{{hist.intervalo}}</td> <td>{{hist.hora_extra}}</td><td>{{ hist.data }}</td>
+		</tr>
 	{% endfor %}
 </table>
 

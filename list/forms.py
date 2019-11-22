@@ -1,14 +1,17 @@
 from django import forms
-from .models import Objeto, Historico
+from .models import Funcionario, Historico
 
-class ObjForm(forms.ModelForm):
-	objeto = forms.CharField(max_length=100, required=False)
+class FuncForm(forms.ModelForm):
 	class Meta:
-		model = Objeto
-		fields = ('server', 'antena', 'code', 'objeto')
+		model = Funcionario
+		fields = ('codigo',)
+
+class CadFuncForm(forms.ModelForm):
+	class Meta:
+		model = Funcionario
+		fields = ('nome', 'funcao', 'data_admissao', 'codigo', 'responsavel')
 
 class HistForm(forms.ModelForm):
-	objeto = forms.CharField(max_length=100, required=False)
 	class Meta:
 		model = Historico
-		fields = ('objeto',)
+		fields = ('codigo', 'intervalo', 'data', 'entrada', 'saida', 'hora_extra')

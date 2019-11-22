@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Objeto
+from .models import Funcionario
 
 
-admin.site.register(Objeto)
+admin.site.register(Funcionario)

@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator 
-from .models import Objeto, Historico
-from .forms import ObjForm, HistForm
+from .models import Funcionario, Historico
+from .forms import FuncForm, HistForm, CadFuncForm
 import time
 from datetime import datetime
 from django.contrib import messages
@@ -18,35 +18,48 @@ from django.http import HttpResponse
 '''
 def homepage(request):
 	template_name = 'homepage.html'
-	log = datetime.now()
-
 	if request.method == 'POST':
-		form = ObjForm(request.POST)
+		form = FuncForm(request.POST)
 		fml = form.save(commit=False)
-		obj1 = Objeto.objects.filter(code=fml.code).first()
-		# Verifica se existe algum objeto cadastrado com esse código
+		func = Funcionario.objects.filter(codigo=fml.codigo).first()
+		if func:
+			pass
+		else:
+			fml.save()
+	else:
+		form = FuncForm()
+	
+	return render(request, template_name)
+
+	'''
+	log = datetime.now()
+	if request.method == 'POST':
+		form = FuncForm(request.POST)
+		fml = form.save(commit=False)
+		obj1 = Funcionario.objects.filter(codigo=fml.codigo).first()
+		# Verifica se existe algum Funcionario cadastrado com esse código
 		if obj1:
-			# Pega a data do objeto, converte para TIMESTAMP e subtrai pela data atual
+			# Pega a data do Funcionario, converte para TIMESTAMP e subtrai pela data atual
 		    timestamp = datetime.timestamp(obj1.date)
 		    timesnow = datetime.timestamp(datetime.now())
 		    result = (timesnow - timestamp)
-		    print('Resultado: {} do Código: {} '.format(result, obj1.code))
+		    print('Resultado: {} do Código: {} '.format(result, obj1.codigo))
 			
 		    # Se o resultado desse subtração for maior que 60(1 minuto) ele pode cadastrar
 		    if result > 60:
-		    	# Adicionando o atual objeto ao Historico antes de atualizá-lo
+		    	# Adicionando o atual Funcionario ao Historico antes de atualizá-lo
 		    	hist = Historico()
 		    	hist.server = fml.server
 		    	hist.antena = fml.antena
-		    	hist.code = fml.code
-		    	hist.objeto = obj1.objeto
+		    	hist.codigo = fml.codigo
+		    	hist.Funcionario = obj1.Funcionario
 		    	hist.date = fml.date
 		    	hist.save() 
-		    	# Atualizando o objeto anterior, pelo que acabou de receber
-		    	obj = Objeto.objects.get(code=fml.code)
+		    	# Atualizando o Funcionario anterior, pelo que acabou de receber
+		    	obj = Funcionario.objects.get(codigo=fml.codigo)
 		    	obj.server = fml.server
 		    	obj.antena = fml.antena
-		    	obj.code = fml.code
+		    	obj.codigo = fml.codigo
 		    	obj.date = datetime.now()
 		    	obj.save()
 		    	return redirect('/') 
@@ -55,12 +68,12 @@ def homepage(request):
 		    else:
 		    	return redirect('/')
 
-		# Se o objeto não existe, ele é cadastrado no ELSE
+		# Se o Funcionario não existe, ele é cadastrado no ELSE
 		else:
 			hist = Historico()
 			hist.server = fml.server
 			hist.antena = fml.antena
-			hist.code = fml.code
+			hist.codigo = fml.codigo
 			hist.date = datetime.now()
 			hist.save()
 			fml.date = datetime.now()
@@ -70,10 +83,10 @@ def homepage(request):
 	
 	# Se o Formulário não for o método POST ele vem pro ELSE
 	else:
-		form = ObjForm()
+		form = FuncForm()
 
 	return render(request, template_name, {'log':log})
-	
+	'''
 	
 '''
 	Função 'LISTAR' Lista os dados do banco na tela e também de pesquisas e filtros.
@@ -82,32 +95,32 @@ def homepage(request):
 def listar(request):
 	search = request.GET.get('search')
 	filtro = request.GET.get('filter')
-	sem = Objeto.objects.filter(objeto='').count()
-	total = Objeto.objects.all().count()
+	sem = Funcionario.objects.filter(nome='').count()
+	total = Funcionario.objects.all().count()
 	com = total - sem
 	
-	filtro_select = request.GET.get('selectcode')
+	filtro_select = request.GET.get('selectcodigo')
 	if filtro_select == 'todos':
-		hist = Historico.objects.all().order_by('-date')
+		hist = Historico.objects.all().order_by('-data_admissao')
 	else:
-		hist = Historico.objects.filter(code=filtro_select)
+		hist = Historico.objects.filter(codigo=filtro_select)
 
 	if search:
-		obj = Objeto.objects.filter(objeto__icontains=search) 
+		obj = Funcionario.objects.filter(nome__icontains=search) 
 
 	elif filtro:
 		if filtro == 'sem':
-			obj = Objeto.objects.filter(objeto='')
+			obj = Funcionario.objects.filter(nome='')
 		elif filtro == 'todos':
-			lista = Objeto.objects.all().order_by('-date')
+			lista = Funcionario.objects.all().order_by('-data_admissao')
 			paginator = Paginator(lista, 10)
 			page = request.GET.get('page')
 			obj = paginator.get_page(page)
 		else:
-			obj = Objeto.objects.exclude(objeto='')
+			obj = Funcionario.objects.exclude(nome='')
 
 	else:
-		lista = Objeto.objects.all().order_by('-date')
+		lista = Funcionario.objects.all().order_by('-data_admissao')
 		paginator = Paginator(lista, 10)
 		page = request.GET.get('page')
 		obj = paginator.get_page(page)
@@ -119,48 +132,49 @@ def listar(request):
 
 
 '''
-	Função 'DELETEOBJ' deleta os objetos e o histórico relacionado automaticamente.
+	Função 'DELETEOBJ' deleta os Funcionarios e o histórico relacionado automaticamente.
 '''
 @login_required
 def deleteObj(request, id):
-	obj = get_object_or_404(Objeto, pk=id)
-	while Historico.objects.filter(code=obj.code):
-		hist = Historico.objects.filter(code=obj.code)
+	obj = get_object_or_404(Funcionario, pk=id)
+	while Historico.objects.filter(codigo=obj.codigo):
+		hist = Historico.objects.filter(codigo=obj.codigo)
 		hist.delete()
 	obj.delete()
-	messages.info(request, 'Registro ('+obj.code+') deletado com sucesso')
+	messages.info(request, 'Registro ('+obj.codigo+') deletado com sucesso')
 	return redirect('/lista')
 
 
 '''
-	Função 'DESVINCULAR' desvincula objeto relacionado ao código acidentalmente.
+	Função 'EDITAR' Edita cadastro do funcionário.
 '''
 @login_required
-def desvincular(request, id):
-	obj = Objeto.objects.filter(pk=id).first()
+def editar(request, id):
+	obj = Funcionario.objects.get(pk=id)
+	form = CadFuncForm(instance=obj)
+	template_name = 'editar.html'
 	if request.method == 'POST':
-		obj.objeto = ''
-		obj.save()
+		form = CadFuncForm(request.POST, instance=obj)
+		if form.is_valid():
+			obj.save()
+			return redirect('/lista')
+		else:
+			return redirect('/lista')
 	else:
-		return redirect('/lista')
-	return redirect('/lista')
-
+		return render(request, template_name, {'form':form})
+	return render(request, template_name, {'form':form})
 
 '''
-	Função 'ADD' Relaciona objetos a determinado código.
+	Função 'ADD' Relaciona Funcionarios a determinado código.
 '''
 @login_required
 def add(request, id):
-	objt = get_object_or_404(Objeto, pk=id) 
-	hist = Historico.objects.filter(code=objt.code).last()
-	formHist = HistForm(instance=hist)
-	form = ObjForm(instance=objt)
+	objt = get_object_or_404(Funcionario, pk=id) 
+	form = CadFuncForm(instance=objt)
 	template_name = 'add.html'
 	if request.method == 'POST':
-		form = ObjForm(request.POST, instance=objt)
+		form = CadFuncForm(request.POST, instance=objt)
 		if form.is_valid():
-			hist.objeto = objt.objeto
-			hist.save()
 			objt.save()
 			return redirect('/lista')
 		else:
@@ -173,20 +187,18 @@ def add(request, id):
 	Função 'HISTORICO' Lista todos os registros de um determinado código.
 '''
 @login_required
-def historico(request, code):
-	total = Historico.objects.filter(code=code).count()
-	his = list(Historico.objects.filter(code=code).order_by('-date'))
-	
+def historico(request, codigo):
+	total = Historico.objects.filter(codigo=codigo).count()
+	his = list(Historico.objects.filter(codigo=codigo).order_by('-data'))
 	paginator = Paginator(his, 10)
 	page = request.GET.get('page')
 	hist = paginator.get_page(page)
 	
 	if not hist:
 		return render(request, '404.html')
-	
 
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist, 'code':code, 'total':total })
+	return render(request, template_name, {'hist':hist, 'codigo':codigo, 'total':total })
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
@@ -194,21 +206,21 @@ def historico(request, code):
 @login_required
 def gerar_pdf(request):
 	
-	sem = Objeto.objects.filter(objeto='').count()
-	total = Objeto.objects.all().count()
+	sem = Funcionario.objects.filter(nome='').count()
+	total = Funcionario.objects.all().count()
 	com = total - sem
 	data_emissao = datetime.now()
 	user = request.user
 
-	filtro_select = request.POST.get('selectcode')
+	filtro_select = request.POST.get('selectcodigo')
 	option = request.POST.get('selectcampos')
 
 	if filtro_select == 'todos':
 		codigo = filtro_select
-		hist = Historico.objects.all().order_by('-code')
+		hist = Historico.objects.all().order_by('-codigo')
 	else:
 		codigo = filtro_select
-		hist = Historico.objects.filter(code=filtro_select).order_by('-code')
+		hist = Historico.objects.filter(codigo=filtro_select).order_by('-codigo')
 
 
 	data = {'hist': hist, 'user':user, 'data_emissao':data_emissao, 'codigo':codigo, 'opt':option, 'com':com, 'sem': sem, 'total':total}
@@ -226,32 +238,32 @@ def post(request):
 	log = datetime.now()
 
 	if request.method == 'POST':
-		form = ObjForm(request.POST)
+		form = FuncForm(request.POST)
 		fml = form.save(commit=False)
-		obj1 = Objeto.objects.filter(code=fml.code).first()
-		# Verifica se existe algum objeto cadastrado com esse código
+		obj1 = Funcionario.objects.filter(codigo=fml.codigo).first()
+		# Verifica se existe algum Funcionario cadastrado com esse código
 		if obj1:
-			# Pega a data do objeto, converte para TIMESTAMP e subtrai pela data atual
+			# Pega a data do Funcionario, converte para TIMESTAMP e subtrai pela data atual
 		    timestamp = datetime.timestamp(obj1.date)
 		    timesnow = datetime.timestamp(datetime.now())
 		    result = (timesnow - timestamp)
-		    print('Resultado: {} do Código: {} '.format(result, obj1.code))
+		    print('Resultado: {} do Código: {} '.format(result, obj1.codigo))
 			
 		    # Se o resultado desse subtração for maior que 60(1 minuto) ele pode cadastrar
 		    if result > 60:
-		    	# Adicionando o atual objeto ao Historico antes de atualizá-lo
+		    	# Adicionando o atual Funcionario ao Historico antes de atualizá-lo
 		    	hist = Historico()
 		    	hist.server = fml.server
 		    	hist.antena = fml.antena
-		    	hist.code = fml.code
-		    	hist.objeto = obj1.objeto
+		    	hist.codigo = fml.codigo
+		    	hist.Funcionario = obj1.Funcionario
 		    	hist.date = fml.date
 		    	hist.save() 
-		    	# Atualizando o objeto anterior, pelo que acabou de receber
-		    	obj = Objeto.objects.get(code=fml.code)
+		    	# Atualizando o Funcionario anterior, pelo que acabou de receber
+		    	obj = Funcionario.objects.get(codigo=fml.codigo)
 		    	obj.server = fml.server
 		    	obj.antena = fml.antena
-		    	obj.code = fml.code
+		    	obj.codigo = fml.codigo
 		    	obj.date = datetime.now()
 		    	obj.save()
 		    	return redirect('/') 
@@ -260,12 +272,12 @@ def post(request):
 		    else:
 		    	return redirect('/')
 
-		# Se o objeto não existe, ele é cadastrado no ELSE
+		# Se o Funcionario não existe, ele é cadastrado no ELSE
 		else:
 			hist = Historico()
 			hist.server = fml.server
 			hist.antena = fml.antena
-			hist.code = fml.code
+			hist.codigo = fml.codigo
 			hist.date = datetime.now()
 			hist.save()
 			fml.date = datetime.now()
@@ -275,6 +287,6 @@ def post(request):
 	
 	# Se o Formulário não for o método POST ele vem pro ELSE
 	else:
-		form = ObjForm()
+		form = FuncForm()
 
 	return render(request, template_name, {'log':log})
