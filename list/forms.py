@@ -9,9 +9,9 @@ class FuncForm(forms.ModelForm):
 class CadFuncForm(forms.ModelForm):
 	class Meta:
 		model = Funcionario
-		fields = ('nome', 'funcao', 'data_admissao', 'codigo', 'responsavel')
+		fields = ('nome', 'funcao', 'data_admissao', 'codigo')
 
 class HistForm(forms.ModelForm):
 	class Meta:
 		model = Historico
-		fields = ('codigo', 'intervalo', 'data', 'entrada', 'saida', 'hora_extra')
+		fields = ('codigo', 'data', 'passagem')

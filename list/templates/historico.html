@@ -6,19 +6,18 @@
 <table class="table">
 	<h1 id="h1-center">Histórico</h1> 
 	<hr>
-	<span class="badge badge-dark">Total de registros: {{ total }}</span> 
+	<span class="badge badge-info">{{ individuo.nome }} - {{ individuo.funcao }}</span>
 	<hr>
 	<div class="alert alert-dark" role="alert">
 			Lista em ordem decrescente de datas.
 	</div>
 	<!--<button class="btn-pdf"><a href="{{ code }}/pdf">Gerar PDF</a></button>-->
 	<tr>
-		<th>Entrada</th> <th>Saida</th> <th>Intervalo</th> <th>Hora extra</th>
-		<th>Data</th>
+		<th>Entrada/Saida</th> <th>Código</th> <th>Data</th>
 	</tr>
-	{% for hist in hist %}	
+	{% for hist in hist %}
 		<tr class="hover">
-			<td>{{hist.entrada}}</td> <td>{{hist.saida}}</td> <td>{{hist.intervalo}}</td> <td>{{hist.hora_extra}}</td><td>{{ hist.data }}</td>
+			<td>{{hist.passagem}}</td> <td>{{hist.codigo}}</td> <td>{{hist.data}}</td>
 		</tr>
 	{% endfor %}
 </table>

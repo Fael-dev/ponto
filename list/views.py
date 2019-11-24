@@ -12,6 +12,7 @@ from django.template.loader import get_template
 from django.http import HttpResponse
 
 
+
 '''
 	Função 'HOMEPAGE' recebe as informações enviadas pela antena e 
 	faz os tratamentos certos antes de salvar.
@@ -23,7 +24,11 @@ def homepage(request):
 		fml = form.save(commit=False)
 		func = Funcionario.objects.filter(codigo=fml.codigo).first()
 		if func:
-			pass
+			hist = Historico()
+			hist.codigo = fml.codigo
+			hist.data = datetime.today()
+			hist.passagem = datetime.now()
+			hist.save()
 		else:
 			fml.save()
 	else:
@@ -31,62 +36,6 @@ def homepage(request):
 	
 	return render(request, template_name)
 
-	'''
-	log = datetime.now()
-	if request.method == 'POST':
-		form = FuncForm(request.POST)
-		fml = form.save(commit=False)
-		obj1 = Funcionario.objects.filter(codigo=fml.codigo).first()
-		# Verifica se existe algum Funcionario cadastrado com esse código
-		if obj1:
-			# Pega a data do Funcionario, converte para TIMESTAMP e subtrai pela data atual
-		    timestamp = datetime.timestamp(obj1.date)
-		    timesnow = datetime.timestamp(datetime.now())
-		    result = (timesnow - timestamp)
-		    print('Resultado: {} do Código: {} '.format(result, obj1.codigo))
-			
-		    # Se o resultado desse subtração for maior que 60(1 minuto) ele pode cadastrar
-		    if result > 60:
-		    	# Adicionando o atual Funcionario ao Historico antes de atualizá-lo
-		    	hist = Historico()
-		    	hist.server = fml.server
-		    	hist.antena = fml.antena
-		    	hist.codigo = fml.codigo
-		    	hist.Funcionario = obj1.Funcionario
-		    	hist.date = fml.date
-		    	hist.save() 
-		    	# Atualizando o Funcionario anterior, pelo que acabou de receber
-		    	obj = Funcionario.objects.get(codigo=fml.codigo)
-		    	obj.server = fml.server
-		    	obj.antena = fml.antena
-		    	obj.codigo = fml.codigo
-		    	obj.date = datetime.now()
-		    	obj.save()
-		    	return redirect('/') 
-
-		    # Se o resultado for menor que 1 minuto
-		    else:
-		    	return redirect('/')
-
-		# Se o Funcionario não existe, ele é cadastrado no ELSE
-		else:
-			hist = Historico()
-			hist.server = fml.server
-			hist.antena = fml.antena
-			hist.codigo = fml.codigo
-			hist.date = datetime.now()
-			hist.save()
-			fml.date = datetime.now()
-			fml.save()
-
-		return redirect('/')
-	
-	# Se o Formulário não for o método POST ele vem pro ELSE
-	else:
-		form = FuncForm()
-
-	return render(request, template_name, {'log':log})
-	'''
 	
 '''
 	Função 'LISTAR' Lista os dados do banco na tela e também de pesquisas e filtros.
@@ -170,11 +119,13 @@ def editar(request, id):
 @login_required
 def add(request, id):
 	objt = get_object_or_404(Funcionario, pk=id) 
+	user = str(request.user)
 	form = CadFuncForm(instance=objt)
 	template_name = 'add.html'
 	if request.method == 'POST':
 		form = CadFuncForm(request.POST, instance=objt)
 		if form.is_valid():
+			objt.responsavel = user
 			objt.save()
 			return redirect('/lista')
 		else:
@@ -188,17 +139,16 @@ def add(request, id):
 '''
 @login_required
 def historico(request, codigo):
-	total = Historico.objects.filter(codigo=codigo).count()
 	his = list(Historico.objects.filter(codigo=codigo).order_by('-data'))
 	paginator = Paginator(his, 10)
 	page = request.GET.get('page')
 	hist = paginator.get_page(page)
-	
+	individuo = Funcionario.objects.get(codigo=codigo)
 	if not hist:
 		return render(request, '404.html')
 
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist, 'codigo':codigo, 'total':total })
+	return render(request, template_name, {'hist':hist, 'codigo':codigo, 'individuo':individuo})
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.

@@ -15,14 +15,14 @@
 <div class="container-fluid">
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/"> <img src="{% static 'images/logo1.ico' %}" class="logo_air"></a>
+  <a class="navbar-brand" href="/"> <img src="{% static 'images/airon.ico' %}" class="logo_air"></a>
   {% if user.is_authenticated %}
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li>
         <a class="navbar-brand" href="/lista">
             <img src="{% static 'images/register_icon.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-            Ultimos registros
+            Lista de funcionários
         </a>
       </li>
       <!--
