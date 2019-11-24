@@ -290,3 +290,7 @@ def post(request):
 		form = FuncForm()
 
 	return render(request, template_name, {'log':log})
+
+'''
+Add awdawd dddw awdawd 
+'''
