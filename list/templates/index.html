@@ -37,62 +37,8 @@
   </div>
 --> 
   <center>
-      <!-- FILTROS DO RELATÓRIO -->
-  <form method="POST" action="pdf/">
-    {% csrf_token %}
-      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title">Relatório do Histórico</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-              <div class="modal-body">
-                    <div class="card" style="width: 100%;">
-                        <div class="card-body">
-                          <h5 class="card-title"><b> Gerar Relatório do Código: </b></h5>
-                          <select name="selectcode" id="selectcode" class="form-control">
-                            <option value="todos">Todos os códigos</option>
-                            {% for obj in obj %}
-                              <option value="{{ obj.code }}">Apenas: {{ obj.codigo }}  -  
-                                {% if obj.nome %}
-                                  {{ obj.nome }}
-                                {% else %} <b>Object not found</b>{% endif %}
-                                </option>
-                            {% endfor %}
-                          </select>
-                          <span>*Ao selecionar todos os códigos, o campo CÓDIGO será inserido.</span>
-                        </div>
-                    </div>
-                    <div class="card" style="width: 100%;">
-                        <div class="card-body">
-                          <h5 class="card-title"><b> Campos que vai ter:</b></h5>
-                          <select name="selectcampos" id="selectcampos" class="form-control">
-                              <option value="todos">Todos os campos</option>
-                              <option value="1"> Servidor - Objeto - Data e Hora </option>
-                              <option value="2"> Servidor - Antena - Objeto </option>
-                              <option value="3"> Servidor - Data e Hora - Antena </option>
-                              <option value="4"> Data e Hora - Antena - Objeto </option>
-                          </select>
-                          <span> *Código(Obrigatório)</span>
-                        </div>
-                    </div>
-
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="badge badge-secundary" data-dismiss="modal"><img src="{% static 'images/excluir.png' %}" class="icon_menu">Fechar</button>
-                  <button type="submit" class="badge badge-info"> <img src="{% static 'images/print.png' %}" class="icon_menu">Gerar PDF</button>
-              </div>
-          </div>
-        </div>
-      </div>
-    </form>
-  
-    <button type="button" class="badge badge-info" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
     <span class="badge badge-dark"> <b> Funcionários: {{ com }}</b></span>
-    <span class="badge badge-dark"> <b> Total de Objetos: {{ total }}</b></span>
+    <span class="badge badge-dark"> <b> Total de Cartões: {{ total }}</b></span>
     <span class="badge badge-dark"> <b> Cartão sem Funcionário: {{ sem }}</b></span>
   </center>
     <table class="table">

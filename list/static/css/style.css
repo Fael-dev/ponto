@@ -64,7 +64,7 @@
 	margin-top: -2px;
 	position: relative;
 	width: 20px;
-	height: auto;
+	height: 15px;
 	vertical-align: middle;
 }
 .collapse{
@@ -134,6 +134,7 @@
 	display: inline-block;
 	float:right;
 }
+
 input[type='search'].form-control{
 	width: 500px;
 }
@@ -160,9 +161,6 @@ ul.messages li{
 /*============ Home Page =============*/
 
 /* text recolor */
-h1 {
-  color:crimson !important;
-}
 a{
 	color:crimson;
 }
@@ -191,4 +189,16 @@ a:hover{
 button{
 	border:none;
 	cursor: pointer;
+}
+/* ============= HISTORICO =============== */
+
+select[name='filterdata']{
+	display: inline;
+	background: transparent;
+	padding:5px;
+}
+
+.collapse{
+	width: 100%;
+	margin:0px;
 }

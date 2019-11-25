@@ -3,15 +3,101 @@
 {% block title %} Histórico {% endblock %}
 {% block content %} 
 
-<table class="table">
+	<!-- ===================== FILTRO PDF ================== -->
 	<h1 id="h1-center">Histórico</h1> 
-	<hr>
-	<span class="badge badge-info">{{ individuo.nome }} - {{ individuo.funcao }}</span>
-	<hr>
-	<div class="alert alert-dark" role="alert">
-			Lista em ordem decrescente de datas.
+	<div class="card card-body">
+	<table class="table table table-striped">
+	    	<tr>
+	    		<th>Nome:</th><th>Responsável</th>
+	   			<th>Função:</th><th>Data de admissão:</th>
+	    	</tr>
+	    	<tr>
+	    		<th>{{ individuo.nome }}</th><th>{{ individuo.responsavel }}</th>
+	    		<th>{{ individuo.funcao }}</th><th>{{ individuo.data_admissao }}</th>
+	    	</tr>
+	</table>
 	</div>
-	<!--<button class="btn-pdf"><a href="{{ code }}/pdf">Gerar PDF</a></button>-->
+	<form method="POST" action="pdf/">
+    {% csrf_token %}
+      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Relatório do Histórico</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              <div class="modal-body">
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+                          <h5 class="card-title"><b> Gerar Relatório do Código: </b></h5>
+                          <select name="selectcode" id="selectcode" class="form-control">
+                            <option value="todos">Escolher data</option>
+                            {% for hist in hist %}
+                              <option value="{{ hist.data }}">{{ hist.data }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                    </div>
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+                          <h5 class="card-title"><b> Campos que vai ter:</b></h5>
+                          <select name="selectcampos" id="selectcampos" class="form-control">
+                              <option value="todos">Todos os campos</option>
+                              <option value="1"> Servidor - Objeto - Data e Hora </option>
+                              <option value="2"> Servidor - Antena - Objeto </option>
+                              <option value="3"> Servidor - Data e Hora - Antena </option>
+                              <option value="4"> Data e Hora - Antena - Objeto </option>
+                          </select>
+                          <span> *Código(Obrigatório)</span>
+                        </div>
+                    </div>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="badge badge-secundary" data-dismiss="modal"><img src="{% static 'images/excluir.png' %}" class="icon_menu">Fechar</button>
+                  <button type="submit" class="badge badge-info"> <img src="{% static 'images/print.png' %}" class="icon_menu">Gerar PDF</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </form>
+	<div class="col-2 filter-div">
+      <span>Escolher dia:</span>
+     
+      	{% csrf_token %}
+	      <select name="filterdata" class="form-inline">  
+		        <option value="todas">Todas as datas</option>
+		        {% for datas in datas %}
+		        <option value="{{ datas.data }}">{{ datas.data }}</option>
+		        {% endfor %}
+	      </select>
+     
+  </div>
+  <center>
+    	<button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
+		<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
+    </center>
+    <div class="collapse" id="infodia">
+	  <div class="card card-body">
+	    <table class="table table table-bordered">
+	    	<tr>
+	    		<td>Entrada:</td><td>{{ entrada.passagem }}</td>
+	    		<td>Saída:</td><td>{{ saida.passagem }}</td>
+	    		<td>Intervalo:</td><td>{{ intervalo }}</td>
+	    	</tr>
+	    	<tr>
+	    		<td>Horas extras: </td><td>{{ horas_extra }}</td>
+	    		<td>Total de horas:</td><td>{{ total }}</td>
+	    		<td>Carga Horária:</td><td>{{ carga_horaria }}</td>
+	    	</tr>
+	    </table>
+	  </div>
+	</div>
+	<br>
+<div class="card card-body">	
+<table class="table">
 	<tr>
 		<th>Entrada/Saida</th> <th>Código</th> <th>Data</th>
 	</tr>
@@ -21,7 +107,8 @@
 		</tr>
 	{% endfor %}
 </table>
-
+</div>	
+<!--
 <div class="pagination">
 	<span class="step-links">
 		{% if hist.has_previous %}
@@ -39,4 +126,5 @@
 		{% endif %}
 	</span>
 </div>
+-->
 {% endblock %}

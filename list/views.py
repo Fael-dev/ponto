@@ -16,17 +16,23 @@ from django.http import HttpResponse
 '''
 	Função 'HOMEPAGE' recebe as informações enviadas pela antena e 
 	faz os tratamentos certos antes de salvar.
+			timestamp = datetime.timestamp(obj1.date)
+		    timesnow = datetime.timestamp(datetime.now())
+		    result = (timesnow - timestamp)
 '''
 def homepage(request):
 	template_name = 'homepage.html'
 	if request.method == 'POST':
 		form = FuncForm(request.POST)
 		fml = form.save(commit=False)
-		func = Funcionario.objects.filter(codigo=fml.codigo).first()
+		hist = Historico.objects.filter(codigo=fml.codigo).last()
+		func = Funcionario.objects.filter(codigo=fml.codigo)
 		if func:
+			dt_str = datetime.now()
+			dt = dt_str.strftime('%d-%m-%Y')
 			hist = Historico()
 			hist.codigo = fml.codigo
-			hist.data = datetime.today()
+			hist.data = dt
 			hist.passagem = datetime.now()
 			hist.save()
 		else:
@@ -139,16 +145,20 @@ def add(request, id):
 '''
 @login_required
 def historico(request, codigo):
-	his = list(Historico.objects.filter(codigo=codigo).order_by('-data'))
+	data = '25-11-2019'
+	his = list(Historico.objects.filter(codigo=codigo, data=data).order_by('-passagem'))
 	paginator = Paginator(his, 10)
 	page = request.GET.get('page')
 	hist = paginator.get_page(page)
+	datas = Historico.objects.filter(codigo=codigo)
 	individuo = Funcionario.objects.get(codigo=codigo)
+	entrada = Historico.objects.filter(codigo=codigo, data=data).first()
+	saida = Historico.objects.filter(codigo=codigo, data=data).last()
 	if not hist:
 		return render(request, '404.html')
 
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist, 'codigo':codigo, 'individuo':individuo})
+	return render(request, template_name, {'hist':hist,'individuo':individuo, 'entrada':entrada, 'saida': saida, 'datas':datas})
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
@@ -173,8 +183,8 @@ def gerar_pdf(request):
 		hist = Historico.objects.filter(codigo=filtro_select).order_by('-codigo')
 
 
-	data = {'hist': hist, 'user':user, 'data_emissao':data_emissao, 'codigo':codigo, 'opt':option, 'com':com, 'sem': sem, 'total':total}
-	pdf = render_to_pdf('relatorio.html', data)
+	data = {'hist': hist, 'user':user, 'data_emissao':data_emissao, 'codigo':codigo}
+	pdf = render_to_pdf('pdf.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')
 
