@@ -15,7 +15,7 @@
       </select>
     <form class="form-inline">
         <input class="form-control mr-sm-2" type="search" placeholder="Pesquise por objetos" aria-label="Pesquisar" name="search" value="{{ request.GET.search }}">
-        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Pesquisar</button>
+        <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Pesquisar</button>
     </form>
   </div>
   
@@ -53,7 +53,7 @@
               <tr align="middle" class="hover">
                 <td> <a href="editar/{{ obj.id }}"> {{ obj.nome }} </a></td> <td> {{ obj.funcao }} </td><td>{{ obj.responsavel }} </td>
                 <td>  {{ obj.codigo }}  </td> <td> {{ obj.data_admissao }}  </td>
-                <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/excluir.png' %}" class="btn-img"></button> </a></td>
+                <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/lixeira.png' %}" class="btn-img"></button> </a></td>
                 <td><a href="historico/{{obj.codigo}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
               </tr>
         
@@ -61,7 +61,7 @@
               <tr align="middle" bgcolor="#ffabab"  class="hover-so">
                 <td> <a href="cadastro/{{ obj.id }}"><button class="btn-acao" title="Adicionar Objeto"><img src="{% static 'images/add.png' %}" class="btn-img"></button></a></td> <td> {{ obj.funcao }} </td><td>{{ obj.responsavel }}</td>
                 <td>  {{ obj.codigo }}  </td> <td> {{ obj.data_admissao }}  </td>
-                <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/excluir.png' %}" class="btn-img" ></button></a> </td>
+                <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/lixeira.png' %}" class="btn-img" ></button></a> </td>
                 <td><a href="historico/{{obj.codigo}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
               </tr>
              

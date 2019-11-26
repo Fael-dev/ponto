@@ -5,10 +5,11 @@
 
 	<!-- ===================== FILTRO PDF ================== -->
 	<h1 id="h1-center">Histórico</h1> 
-	<div class="card card-body">
+	<fieldset class="card card-body">
+	<legend>Funcionário</legend>
 	<table class="table table table-striped">
 	    	<tr>
-	    		<th>Nome:</th><th>Responsável</th>
+	    		<th>Nome:</th><th>Responsável:</th>
 	   			<th>Função:</th><th>Data de admissão:</th>
 	    	</tr>
 	    	<tr>
@@ -16,7 +17,7 @@
 	    		<th>{{ individuo.funcao }}</th><th>{{ individuo.data_admissao }}</th>
 	    	</tr>
 	</table>
-	</div>
+	</fieldset>
 	<form method="POST" action="pdf/">
     {% csrf_token %}
       <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -80,7 +81,8 @@
 		<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
     </center>
     <div class="collapse" id="infodia">
-	  <div class="card card-body">
+	  <fieldset class="card card-body">
+	  <legend>Dia {{ data }}</legend>
 	    <table class="table table table-bordered">
 	    	<tr>
 	    		<td>Entrada:</td><td>{{ entrada.passagem }}</td>
@@ -93,7 +95,7 @@
 	    		<td>Carga Horária:</td><td>{{ carga_horaria }}</td>
 	    	</tr>
 	    </table>
-	  </div>
+	  </fieldset>
 	</div>
 	<br>
 <div class="card card-body">	
