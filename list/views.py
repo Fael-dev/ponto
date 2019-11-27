@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, get_list_or_40
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator 
-from .models import Funcionario, Historico
+from .models import Funcionario, Ponto, Diaria
 from .forms import FuncForm, HistForm, CadFuncForm
 import time
 from datetime import datetime
@@ -19,22 +19,60 @@ from django.http import HttpResponse
 			timestamp = datetime.timestamp(obj1.date)
 		    timesnow = datetime.timestamp(datetime.now())
 		    result = (timesnow - timestamp)
+		    dt_str = datetime.now()
+			dt = dt_str.strftime('%d-%m-%Y')
 '''
 def homepage(request):
 	template_name = 'homepage.html'
+	dt_str = datetime.now()
+	dt = dt_str.strftime('%d-%m-%Y')
+
 	if request.method == 'POST':
 		form = FuncForm(request.POST)
 		fml = form.save(commit=False)
-		hist = Historico.objects.filter(codigo=fml.codigo).last()
-		func = Funcionario.objects.filter(codigo=fml.codigo)
+		func = Funcionario.objects.filter(codigo=fml.codigo).first()
 		if func:
-			dt_str = datetime.now()
-			dt = dt_str.strftime('%d-%m-%Y')
-			hist = Historico()
+			hist = Ponto()
 			hist.codigo = fml.codigo
-			hist.data = dt
-			hist.passagem = datetime.now()
+			hist.data = datetime.now()
+			hist.dia = dt
 			hist.save()
+
+			# IFs DE ENTRADA/SAIDA PARA PREENCHIMENTO DA TABELA DIÁRIA.
+			p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
+			print(len(p))
+			if len(p) == 1: # SE O USUÁRIO PASSOU UMA VEZ, CADASTRA NO BANCO DIÁRIA A CHEGADA NA EMPRESA
+				ent = Ponto.objects.get(codigo=fml.codigo, dia=dt)
+				dia = Diaria()
+				dia.entrada = ent.data
+				dia.codigo = ent.codigo
+				dia.data = dt
+				dia.save()
+				print('ENTRADA')
+			elif len(p) == 3: # SE O USUÁRIO PASSOU TRES VEZES, É CALCULADO O INTERVALO DA SEGUNDA E TERCEIRA BATIDA E ACRESCENTADO NO BANCO DIÁRIA. 
+				dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
+				p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
+				saida = datetime.timestamp(p[1].data)
+				chegada = datetime.timestamp(p[2].data)
+				dia.intervalo = chegada - saida
+				dia.save()
+				print('INTERVALO')
+			elif len(p) == 4: # SE O USUÁRIO PASSOU QUATRO VEZES, CADASTRA NO BANCO DIÁRIA O TÉRMINO DO EXPEDIENTE NA EMPRESA
+				dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
+				inicio = datetime.timestamp(p[0].data)
+				fim = datetime.timestamp(p[3].data)
+				total = fim - inicio
+				intervalo = float(dia.intervalo)
+				dia.saida = p[3].data
+				dia.total_horas = total
+				dia.hrs_trabalhadas = total - intervalo
+				dia.hora_extra = '0'
+				dia.save()
+				print('SAÍDA')
+				
+			else:
+				#messages.warning(request, 'Alerta! Usuário ultrapassou limite de batidas')
+				print('else')
 		else:
 			fml.save()
 	else:
@@ -56,9 +94,9 @@ def listar(request):
 	
 	filtro_select = request.GET.get('selectcodigo')
 	if filtro_select == 'todos':
-		hist = Historico.objects.all().order_by('-data_admissao')
+		hist = Ponto.objects.all().order_by('-data_admissao')
 	else:
-		hist = Historico.objects.filter(codigo=filtro_select)
+		hist = Ponto.objects.filter(codigo=filtro_select)
 
 	if search:
 		obj = Funcionario.objects.filter(nome__icontains=search) 
@@ -92,8 +130,8 @@ def listar(request):
 @login_required
 def deleteObj(request, id):
 	obj = get_object_or_404(Funcionario, pk=id)
-	while Historico.objects.filter(codigo=obj.codigo):
-		hist = Historico.objects.filter(codigo=obj.codigo)
+	while Ponto.objects.filter(codigo=obj.codigo):
+		hist = Ponto.objects.filter(codigo=obj.codigo)
 		hist.delete()
 	obj.delete()
 	messages.info(request, 'Registro ('+obj.codigo+') deletado com sucesso')
@@ -141,24 +179,21 @@ def add(request, id):
 
 
 '''
-	Função 'HISTORICO' Lista todos os registros de um determinado código.
+	Função 'Ponto' Lista todos os registros de um determinado código.
 '''
 @login_required
 def historico(request, codigo):
-	data = '25-11-2019'
-	his = list(Historico.objects.filter(codigo=codigo, data=data).order_by('-passagem'))
+	his = list(Ponto.objects.filter(codigo=codigo))
 	paginator = Paginator(his, 10)
 	page = request.GET.get('page')
 	hist = paginator.get_page(page)
-	datas = Historico.objects.filter(codigo=codigo)
-	individuo = Funcionario.objects.get(codigo=codigo)
-	entrada = Historico.objects.filter(codigo=codigo, data=data).first()
-	saida = Historico.objects.filter(codigo=codigo, data=data).last()
+	individuo = Funcionario.objects.filter(codigo=codigo)
+	dia = Diaria.objects.filter(codigo=codigo).first()
 	if not hist:
 		return render(request, '404.html')
 
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist,'individuo':individuo, 'entrada':entrada, 'saida': saida, 'datas':datas})
+	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia})
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
@@ -177,10 +212,10 @@ def gerar_pdf(request):
 
 	if filtro_select == 'todos':
 		codigo = filtro_select
-		hist = Historico.objects.all().order_by('-codigo')
+		hist = Ponto.objects.all().order_by('-codigo')
 	else:
 		codigo = filtro_select
-		hist = Historico.objects.filter(codigo=filtro_select).order_by('-codigo')
+		hist = Ponto.objects.filter(codigo=filtro_select).order_by('-codigo')
 
 
 	data = {'hist': hist, 'user':user, 'data_emissao':data_emissao, 'codigo':codigo}
@@ -188,69 +223,3 @@ def gerar_pdf(request):
 
 	return HttpResponse(pdf, content_type='application/pdf')
 
-def pdf(request):
-	template_name = 'pdf.html'
-	pdf = render_to_pdf(template_name)
-	return HttpResponse(pdf, content_type='application/pdf')
-
-def post(request):
-	template_name = 'pdf.html'
-	log = datetime.now()
-
-	if request.method == 'POST':
-		form = FuncForm(request.POST)
-		fml = form.save(commit=False)
-		obj1 = Funcionario.objects.filter(codigo=fml.codigo).first()
-		# Verifica se existe algum Funcionario cadastrado com esse código
-		if obj1:
-			# Pega a data do Funcionario, converte para TIMESTAMP e subtrai pela data atual
-		    timestamp = datetime.timestamp(obj1.date)
-		    timesnow = datetime.timestamp(datetime.now())
-		    result = (timesnow - timestamp)
-		    print('Resultado: {} do Código: {} '.format(result, obj1.codigo))
-			
-		    # Se o resultado desse subtração for maior que 60(1 minuto) ele pode cadastrar
-		    if result > 60:
-		    	# Adicionando o atual Funcionario ao Historico antes de atualizá-lo
-		    	hist = Historico()
-		    	hist.server = fml.server
-		    	hist.antena = fml.antena
-		    	hist.codigo = fml.codigo
-		    	hist.Funcionario = obj1.Funcionario
-		    	hist.date = fml.date
-		    	hist.save() 
-		    	# Atualizando o Funcionario anterior, pelo que acabou de receber
-		    	obj = Funcionario.objects.get(codigo=fml.codigo)
-		    	obj.server = fml.server
-		    	obj.antena = fml.antena
-		    	obj.codigo = fml.codigo
-		    	obj.date = datetime.now()
-		    	obj.save()
-		    	return redirect('/') 
-
-		    # Se o resultado for menor que 1 minuto
-		    else:
-		    	return redirect('/')
-
-		# Se o Funcionario não existe, ele é cadastrado no ELSE
-		else:
-			hist = Historico()
-			hist.server = fml.server
-			hist.antena = fml.antena
-			hist.codigo = fml.codigo
-			hist.date = datetime.now()
-			hist.save()
-			fml.date = datetime.now()
-			fml.save()
-
-		return redirect('/')
-	
-	# Se o Formulário não for o método POST ele vem pro ELSE
-	else:
-		form = FuncForm()
-
-	return render(request, template_name, {'log':log})
-
-'''
-Add awdawd dddw awdawd 
-'''

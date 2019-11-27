@@ -1,5 +1,5 @@
 from django import forms
-from .models import Funcionario, Historico
+from .models import Funcionario, Ponto
 
 class FuncForm(forms.ModelForm):
 	class Meta:
@@ -9,9 +9,9 @@ class FuncForm(forms.ModelForm):
 class CadFuncForm(forms.ModelForm):
 	class Meta:
 		model = Funcionario
-		fields = ('nome', 'funcao', 'data_admissao', 'codigo')
+		fields = ('nome', 'funcao', 'data_admissao', 'codigo', 'carga_horaria')
 
 class HistForm(forms.ModelForm):
 	class Meta:
-		model = Historico
-		fields = ('codigo', 'data', 'passagem')
+		model = Ponto
+		fields = ('codigo', 'data')

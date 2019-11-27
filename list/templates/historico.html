@@ -10,11 +10,12 @@
 	<table class="table table table-striped">
 	    	<tr>
 	    		<th>Nome:</th><th>Responsável:</th>
-	   			<th>Função:</th><th>Data de admissão:</th>
+	   			<th>Função:</th><th>Data de admissão:</th><th>Carga horária</th>
 	    	</tr>
 	    	<tr>
 	    		<th>{{ individuo.nome }}</th><th>{{ individuo.responsavel }}</th>
 	    		<th>{{ individuo.funcao }}</th><th>{{ individuo.data_admissao }}</th>
+	    		<th>{{ individuo.carga_horaria }} Horas</th>
 	    	</tr>
 	</table>
 	</fieldset>
@@ -82,17 +83,17 @@
     </center>
     <div class="collapse" id="infodia">
 	  <fieldset class="card card-body">
-	  <legend>Dia {{ data }}</legend>
+	  <legend>Dia</legend>
 	    <table class="table table table-bordered">
 	    	<tr>
-	    		<td>Entrada:</td><td>{{ entrada.passagem }}</td>
-	    		<td>Saída:</td><td>{{ saida.passagem }}</td>
-	    		<td>Intervalo:</td><td>{{ intervalo }}</td>
+	    		<td>Entrada:</td><td>{{ dia.entrada }}</td>
+	    		<td>Saída:</td><td>{{ dia.saida }}</td>
+	    		<td>Intervalo:</td><td>{{ dia.intervalo }}</td>
 	    	</tr>
 	    	<tr>
-	    		<td>Horas extras: </td><td>{{ horas_extra }}</td>
-	    		<td>Total de horas:</td><td>{{ total }}</td>
-	    		<td>Carga Horária:</td><td>{{ carga_horaria }}</td>
+	    		<td>Horas extras: </td><td>{{ dia.hora_extra }}</td>
+	    		<td>Total de horas:</td><td>{{ dia.total_horas }}</td>
+	    		<td>Horas Trabalhadas:</td><td>{{ dia.hrs_trabalhadas }}</td>
 	    	</tr>
 	    </table>
 	  </fieldset>
@@ -101,11 +102,11 @@
 <div class="card card-body">	
 <table class="table">
 	<tr>
-		<th>Entrada/Saida</th> <th>Código</th> <th>Data</th>
+		<th>Entrada/Saida</th> <th>Código</th> 
 	</tr>
 	{% for hist in hist %}
 		<tr class="hover">
-			<td>{{hist.passagem}}</td> <td>{{hist.codigo}}</td> <td>{{hist.data}}</td>
+			<td>{{hist.data}}</td> <td>{{hist.codigo}}</td>
 		</tr>
 	{% endfor %}
 </table>
