@@ -34,4 +34,4 @@ def sendData(antena_id, code):
 	print(host_ip)
 	print(host_name)
 
-sendData(antena, '753')
+sendData(antena, '43123')

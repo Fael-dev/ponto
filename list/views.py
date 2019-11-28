@@ -3,7 +3,7 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator 
 from .models import Funcionario, Ponto, Diaria
-from .forms import FuncForm, HistForm, CadFuncForm
+from .forms import FuncForm, HistForm, CadFuncForm, DiaForm
 import time
 from datetime import datetime
 from django.contrib import messages
@@ -54,24 +54,27 @@ def homepage(request):
 				p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
 				saida = datetime.timestamp(p[1].data)
 				chegada = datetime.timestamp(p[2].data)
-				dia.intervalo = chegada - saida
+				s = datetime.fromtimestamp(saida)
+				c = datetime.fromtimestamp(chegada)
+				dia.intervalo = c.hour - s.hour
 				dia.save()
 				print('INTERVALO')
 			elif len(p) == 4: # SE O USUÁRIO PASSOU QUATRO VEZES, CADASTRA NO BANCO DIÁRIA O TÉRMINO DO EXPEDIENTE NA EMPRESA
 				dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
 				inicio = datetime.timestamp(p[0].data)
 				fim = datetime.timestamp(p[3].data)
-				total = fim - inicio
 				intervalo = float(dia.intervalo)
+				total = fim - inicio
+				t = datetime.fromtimestamp(total)
+				i = datetime.fromtimestamp(intervalo)
 				dia.saida = p[3].data
-				dia.total_horas = total
-				dia.hrs_trabalhadas = total - intervalo
-				dia.hora_extra = '0'
+				dia.total_horas = t.hour
+				dia.hrs_trabalhadas = t.hour - i.hour
+				dia.hora_extra = dia.hrs_trabalhadas - func.carga_horaria
 				dia.save()
 				print('SAÍDA')
 				
 			else:
-				#messages.warning(request, 'Alerta! Usuário ultrapassou limite de batidas')
 				print('else')
 		else:
 			fml.save()
@@ -91,12 +94,6 @@ def listar(request):
 	sem = Funcionario.objects.filter(nome='').count()
 	total = Funcionario.objects.all().count()
 	com = total - sem
-	
-	filtro_select = request.GET.get('selectcodigo')
-	if filtro_select == 'todos':
-		hist = Ponto.objects.all().order_by('-data_admissao')
-	else:
-		hist = Ponto.objects.filter(codigo=filtro_select)
 
 	if search:
 		obj = Funcionario.objects.filter(nome__icontains=search) 
@@ -121,7 +118,7 @@ def listar(request):
 
 	template_name = 'index.html'
 
-	return render(request, template_name, {'obj':obj, 'sem': sem, 'com': com, 'total':total, 'hist':hist})
+	return render(request, template_name, {'obj':obj, 'sem': sem, 'com': com, 'total':total})
 
 
 '''
@@ -157,6 +154,23 @@ def editar(request, id):
 		return render(request, template_name, {'form':form})
 	return render(request, template_name, {'form':form})
 
+@login_required
+def editarDia(request, id):
+	dia = Diaria.objects.get(pk=id)
+	p = Ponto.objects.filter(codigo=dia.codigo).first()
+	form = DiaForm(instance=dia)
+	template_name = 'editardia.html'
+	if request.method == 'POST':
+		form = DiaForm(request.POST, instance=dia)
+		if form.is_valid():
+			dia.save()
+			return redirect('/lista')
+		else:
+			return redirect('/lista')
+	else:
+		return render(request, template_name, {'form':form, 'p':p })
+	return render(request, template_name, {'form':form, 'p':p })
+
 '''
 	Função 'ADD' Relaciona Funcionarios a determinado código.
 '''
@@ -183,43 +197,42 @@ def add(request, id):
 '''
 @login_required
 def historico(request, codigo):
-	his = list(Ponto.objects.filter(codigo=codigo))
-	paginator = Paginator(his, 10)
-	page = request.GET.get('page')
-	hist = paginator.get_page(page)
-	individuo = Funcionario.objects.filter(codigo=codigo)
-	dia = Diaria.objects.filter(codigo=codigo).first()
+	filtro_data = request.POST.get('filterdata')
+	if filtro_data:
+		hist = Ponto.objects.filter(codigo=codigo, dia=filtro_data)
+		dia = Diaria.objects.filter(codigo=codigo, data=filtro_data).first()
+	else:	
+		hist = Ponto.objects.filter(codigo=codigo)
+		dia = Diaria.objects.filter(codigo=codigo).first()
+
+	individuo = Funcionario.objects.filter(codigo=codigo).first()
+	data = Diaria.objects.filter(codigo=codigo)
 	if not hist:
 		return render(request, '404.html')
 
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia})
+	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia, 'data':data})
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
 '''
 @login_required
-def gerar_pdf(request):
-	
-	sem = Funcionario.objects.filter(nome='').count()
-	total = Funcionario.objects.all().count()
-	com = total - sem
+def gerar_pdf(request, codigo):
+	func = Funcionario.objects.get(codigo=codigo)
 	data_emissao = datetime.now()
-	user = request.user
 
-	filtro_select = request.POST.get('selectcodigo')
+	filtro_select = request.POST.get('selectdata')
 	option = request.POST.get('selectcampos')
 
-	if filtro_select == 'todos':
-		codigo = filtro_select
-		hist = Ponto.objects.all().order_by('-codigo')
+	if filtro_select == 'todas':
+		dia = Diaria.objects.filter(codigo=codigo).order_by('-codigo')
 	else:
-		codigo = filtro_select
-		hist = Ponto.objects.filter(codigo=filtro_select).order_by('-codigo')
+		dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).order_by('-codigo')
 
 
-	data = {'hist': hist, 'user':user, 'data_emissao':data_emissao, 'codigo':codigo}
+	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func}
 	pdf = render_to_pdf('pdf.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')
+
 

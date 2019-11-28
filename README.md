@@ -5,7 +5,7 @@ consegui captar informações de cartões ou quaisquer objetos com um chip senso
 que, ao serem detectados pelo sistema, seu código, junto com sua antena, servidor e horário, serão
 devidamente tratados e encaminhados para um banco de dados do sistema e renderizados devidamente.
 
-Repositório GEOMK | Aironnet
+Repositório Pessoal
 
 Requerimentos:
 |
@@ -15,9 +15,7 @@ xhtml2pdf |
 django-xhtml2pdf |
 
 
-Alterar banco, de objetos, para pessoas.
-Adaptar sistema RFID de objetos para ponto de trabalho.
-Gerar PDF de acordo com planilha.
+Melhorar Designer, melhorar banco e funções...
 
 
 

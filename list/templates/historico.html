@@ -5,6 +5,7 @@
 
 	<!-- ===================== FILTRO PDF ================== -->
 	<h1 id="h1-center">Histórico</h1> 
+	<!-- ============================== CABEÇALHO ========================== -->
 	<fieldset class="card card-body">
 	<legend>Funcionário</legend>
 	<table class="table table table-striped">
@@ -19,7 +20,11 @@
 	    	</tr>
 	</table>
 	</fieldset>
-	<form method="POST" action="pdf/">
+	<!-- ============================== CABEÇALHO ========================== -->
+
+	<!-- ============================== TELA FILTRAR RELATÓRIO ========================== -->
+	<form method="POST" action="pdf/{{ dia.codigo }}">
+	<center>
     {% csrf_token %}
       <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -33,11 +38,11 @@
               <div class="modal-body">
                     <div class="card" style="width: 100%;">
                         <div class="card-body">
-                          <h5 class="card-title"><b> Gerar Relatório do Código: </b></h5>
-                          <select name="selectcode" id="selectcode" class="form-control">
-                            <option value="todos">Escolher data</option>
-                            {% for hist in hist %}
-                              <option value="{{ hist.data }}">{{ hist.data }}</option>
+                          <h5 class="card-title"><b> Gerar Relatório do Dia: </b></h5>
+                          <select name="selectdata" id="selectdata" class="form-control">
+                            <option value="todas">Todos os dias</option>
+                            {% for data in data %}
+                              <option value="{{ data.data }}">{{ data.data }}</option>
                             {% endfor %}
                           </select>
                         </div>
@@ -55,6 +60,19 @@
                           <span> *Código(Obrigatório)</span>
                         </div>
                     </div>
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+                         <!-- <h5 class="card-title"><b> Campos que vai ter:</b></h5> -->
+							<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" id="radiocom" value="com">
+							  <label class="form-check-label" for="radiocom">Com batidas</label>
+							</div>
+							<div class="form-check form-check-inline">
+							  <input class="form-check-input" type="radio" id="radiosem" value="sem">
+							  <label class="form-check-label" for="radiosem">Sem batidas</label>
+							</div>         
+                        </div>
+                    </div>
 
               </div>
               <div class="modal-footer">
@@ -64,30 +82,44 @@
           </div>
         </div>
       </div>
+    </center>  
     </form>
-	<div class="col-2 filter-div">
-      <span>Escolher dia:</span>
-     
+    <!-- ============================== TELA FILTRAR RELATÓRIO ========================== -->
+    <hr>
+    <!-- ======================== FILTRO ESCOLHER DIA E BOTÃO GERAR PDF =================== -->
+	<div class="col-6 filter_data">
+     <form method="POST">
+      <span class="badge badge-light">Escolher dia:</span>
       	{% csrf_token %}
-	      <select name="filterdata" class="form-inline">  
-		        <option value="todas">Todas as datas</option>
-		        {% for datas in datas %}
-		        <option value="{{ datas.data }}">{{ datas.data }}</option>
+	      <select name="filterdata" class="select_data">  
+		        <option value="">Escolha um dia</option>
+		        {% for data in data %}
+		        <option value="{{ data.data }}">{{ data.data }}</option>
 		        {% endfor %}
 	      </select>
-     
-  </div>
-  <center>
+	      <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">
+	      	Ir
+	      </button>
+     </form>
+  	</div>
+  	<center>
     	<button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
 		<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
     </center>
+  	<!-- ======================== FILTRO ESCOLHER DIA E GERAR PDF ======================== -->
+
+  	<!-- ======================== TABELA COM INFORMAÇÕES DO DIA ========================= -->
     <div class="collapse" id="infodia">
 	  <fieldset class="card card-body">
-	  <legend>Dia</legend>
+	  <legend>Diária</legend>
 	    <table class="table table table-bordered">
 	    	<tr>
 	    		<td>Entrada:</td><td>{{ dia.entrada }}</td>
-	    		<td>Saída:</td><td>{{ dia.saida }}</td>
+	    		{% if dia.saida == None %}
+	    			<td>Saída</td><td>...</td>
+	    		{% else %}
+	    			<td>Saída:</td><td>{{ dia.saida }}</td>
+	    		{% endif %}
 	    		<td>Intervalo:</td><td>{{ dia.intervalo }}</td>
 	    	</tr>
 	    	<tr>
@@ -96,38 +128,25 @@
 	    		<td>Horas Trabalhadas:</td><td>{{ dia.hrs_trabalhadas }}</td>
 	    	</tr>
 	    </table>
+	    <button class="btn btn-outline-dark my-2 my-sm-0" data-toggle="modal" data-target="#Modaleditar" 
+	    ><a href="diaria/{{ dia.id }}">Editar</a></button>
 	  </fieldset>
 	</div>
+	<!-- ======================== TABELA COM INFORMAÇÕES DO DIA ========================= -->
 	<br>
-<div class="card card-body">	
-<table class="table">
-	<tr>
-		<th>Entrada/Saida</th> <th>Código</th> 
-	</tr>
-	{% for hist in hist %}
-		<tr class="hover">
-			<td>{{hist.data}}</td> <td>{{hist.codigo}}</td>
-		</tr>
-	{% endfor %}
-</table>
-</div>	
-<!--
-<div class="pagination">
-	<span class="step-links">
-		{% if hist.has_previous %}
-			<a href="?page={{ hist.previous_page_number }} "> <img src="{%static 'images/previous.png'%}"></a>
-		{% endif %}
-
-		{% if hist.paginator.num_pages %}
-			<span class="current">
-				{{ hist.number }} de {{ hist.paginator.num_pages }}
-			</span>
-		{% endif %}
-
-		{% if hist.has_next %}
-			<a href="?page={{ hist.next_page_number }} "><img src="{% static 'images/next.png'%}"></a>
-		{% endif %}
-	</span>
-</div>
--->
+	<!-- ========================== TABELA COM BATIDAS DO DIA =========================== -->
+	<fieldset class="card card-body">	
+		<legend>Batidas do dia</legend>
+		<table class="table">
+			<tr>
+				<th>Entrada/Saida</th> <th>Código</th> 
+			</tr>
+			{% for hist in hist %}
+				<tr class="hover">
+					<td>{{hist.data}}</td> <td>{{hist.codigo}}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</fieldset>	
+	<!-- ========================== TABELA COM BATIDAS DO DIA =========================== -->
 {% endblock %}

@@ -151,7 +151,7 @@ ul.messages li{
 }
 /*================ CONFIGURAÇÃO PDF ===================*/
 .card{
-	margin-bottom: 20px;
+	margin-bottom: 50px;
 	margin-top: 20px;
 	background-color: #f5f5f5;
 }
@@ -206,4 +206,13 @@ legend{
     padding:0 10px; /* To give a bit of padding on the left and right */
 	border-bottom:none;
 	text-align: center;
+}
+.filter_data{
+	display: inline;
+}
+.select_data{
+	position: relative;
+	width: 200px;
+	height: 37px;
+	border-radius: 5px;
 }
