@@ -16,7 +16,7 @@ from django.http import HttpResponse
 '''
 	Função 'HOMEPAGE' recebe as informações enviadas pela antena e 
 	faz os tratamentos certos antes de salvar.
-	add ao repositório do Pedro
+	add ao meu repositório 
 '''
 def homepage(request):
 	template_name = 'homepage.html'
