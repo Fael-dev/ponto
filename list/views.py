@@ -32,7 +32,7 @@ def homepage(request):
 			dtnow = datetime.timestamp(datetime.now())
 			dtbatida = datetime.timestamp(pt.data)
 			result = dtnow - dtbatida
-			if result >= 600:
+			if result >= 3600:
 				hist = Ponto()
 				hist.codigo = fml.codigo
 				hist.data = datetime.now()
@@ -40,7 +40,6 @@ def homepage(request):
 				hist.save()
 				# IFs DE ENTRADA/SAIDA PARA PREENCHIMENTO DA TABELA DIÁRIA.
 				p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
-				print(len(p))
 				if len(p) == 1: # SE O USUÁRIO PASSOU UMA VEZ, CADASTRA NO BANCO DIÁRIA A CHEGADA NA EMPRESA
 					ent = Ponto.objects.get(codigo=fml.codigo, dia=dt)
 					dia = Diaria()
@@ -213,9 +212,9 @@ def historico(request, codigo):
 	if not hist:
 		return render(request, '404.html')
 
-
+	leng = len(hist)
 	template_name = 'historico.html'
-	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia, 'data':data})
+	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia, 'data':data, 'len':leng})
 
 '''
 	Função 'GERAR_PDF' Gera relatório em formato PDF a partir de uma filtragem realizada previamente.
@@ -224,14 +223,18 @@ def historico(request, codigo):
 def gerar_pdf(request, codigo):
 	func = Funcionario.objects.get(codigo=codigo)
 	data_emissao = datetime.now()
+
 	filtro_select = request.POST.get('selectdata')
 	option = request.POST.get('selectcampos')
+	radio = request.POST.get('radio')
 	if filtro_select == 'todas': 
-		dia = Diaria.objects.filter(codigo=codigo)
+		dia = Diaria.objects.filter(codigo=codigo).order_by('data')
+		ponto = Ponto.objects.filter(codigo=codigo).order_by('-data')
 	else:
-		dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select)
+		dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).order_by('data')
+		ponto = Ponto.objects.filter(codigo=codigo, dia=filtro_select).order_by('-data')
 
-	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func, 'option':option, 'data':filtro_select}
+	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func, 'option':option, 'data':filtro_select, 'radio':radio, 'ponto':ponto}
 	pdf = render_to_pdf('pdf.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')

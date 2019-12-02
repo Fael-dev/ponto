@@ -50,25 +50,25 @@
                     <div class="card" style="width: 100%;">
                         <div class="card-body">
                           <h5 class="card-title"><b> Campos que vai ter:</b></h5>
-                          <select name="selectcampos" id="selectcampos" class="form-control">
+                          <select name="selectcampos" class="form-control">
                               <option value="todos">Todos os campos</option>
                               <option value="1"> Intervalo - Hora Extra - Total Horas </option>
                               <option value="2"> Intervalo - Hora Extra - Horas Trabalhadas </option>
                               <option value="3"> Intervalo - Total Horas - Horas Trabalhadas  </option>
                               <option value="4"> Total Horas - Horas Trabalhadas - Hora Extra </option>
                           </select>
-                          <span> *Entrada e Saída são campos obrigatórios</span>
+                          <span> *Data, Entrada e Saída são campos obrigatórios</span>
                         </div>
                     </div>
                     <div class="card" style="width: 100%;">
                         <div class="card-body">
-                         <!-- <h5 class="card-title"><b> Campos que vai ter:</b></h5> -->
+                         <h5 class="card-title"><b> Batidas diárias</b></h5>
 							<div class="form-check form-check-inline">
-							  <input class="form-check-input" type="radio" id="radiocom" value="com">
+							  <input class="form-check-input" type="radio" name="radio" id="radiocom" value="com">
 							  <label class="form-check-label" for="radiocom">Com batidas</label>
 							</div>
 							<div class="form-check form-check-inline">
-							  <input class="form-check-input" type="radio" id="radiosem" value="sem">
+							  <input class="form-check-input" type="radio" name="radio" id="radiosem" value="sem" checked>
 							  <label class="form-check-label" for="radiosem">Sem batidas</label>
 							</div>         
                         </div>

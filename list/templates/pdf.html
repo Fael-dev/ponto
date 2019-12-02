@@ -17,8 +17,12 @@
             left: 50pt; width: 512pt; top: 772pt; height: 20pt;
         }
     }
+    .table{
+        margin-bottom: 50px;
+    }
     .table td{
         text-align: center;
+        padding:1px;
     }
     .table th{
         padding:5px;
@@ -44,10 +48,10 @@
     </div>
         <table>
             <tr>
-                <td>Nome: {{ func.nome }}</td><td>ID:{{ func.pk }} </td><td>Data emissão: {{ data_emissao }}</td>
+                <td>Nome: <b>{{ func.nome }}</b></td><td>ID:<b>{{ func.pk }}</b> </td><td>Data emissão: <b>{{ data_emissao }}</b></td>
             </tr>
             <tr>
-                <td>Função: {{ func.funcao }}</td><td> Data de Admissão: {{ func.data_admissao }} </td><td>Carga Horária: {{ func.carga_horaria }} </td>
+                <td>Função: <b>{{ func.funcao }}</b></td><td> Data de Admissão: <b>{{ func.data_admissao }} </b></td><td>Carga Horária: <b>{{ func.carga_horaria }}</b> </td>
             </tr>
             <tr></tr>
             <tr><td>Assinatura:</td><td><hr></td><td><hr></td></tr>
@@ -110,6 +114,20 @@
             {% endfor %}
             {% endif %}
         </table>
+        {% if radio == 'com' %}
+            <hr>
+            <table>
+                <tr>
+                    <td>Data</td><td>Batida</td><td>Código</td>
+                </tr>
+                {% for ponto in ponto %}
+                <tr>
+                    <td>{{ ponto.dia }}</td><td>{{ ponto.data }}</td><td>{{ ponto.codigo }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+        {% endif %}
     </div>
 
     <!-- Content for Static Frame 'footer_frame' -->
