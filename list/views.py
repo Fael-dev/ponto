@@ -226,33 +226,12 @@ def gerar_pdf(request, codigo):
 	data_emissao = datetime.now()
 	filtro_select = request.POST.get('selectdata')
 	option = request.POST.get('selectcampos')
-	if option == '1':
-		if filtro_select == 'todas': 
-			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hora_extra', 'total_horas')
-		else:
-			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hora_extra', 'total_horas')
-	elif option == '2':
-		if filtro_select == 'todas': 
-			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hora_extra', 'hrs_trabalhadas')
-		else:
-			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hora_extra', 'hrs_trabalhadas')
-	elif option == '3':
-		if filtro_select == 'todas': 
-			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hrs_trabalhadas', 'total_horas')
-		else:
-			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hrs_trabalhadas', 'total_horas')
-	elif option == '4':
-		if filtro_select == 'todas': 
-			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','total_horas', 'hora_extra', 'hrs_trabalhadas')
-		else:
-			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','total_horas', 'hora_extra', 'hrs_trabalhadas')
+	if filtro_select == 'todas': 
+		dia = Diaria.objects.filter(codigo=codigo)
 	else:
-		if filtro_select == 'todas': 
-			dia = Diaria.objects.filter(codigo=codigo)
-		else:
-			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select)
+		dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select)
 
-	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func, 'option':option}
+	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func, 'option':option, 'data':filtro_select}
 	pdf = render_to_pdf('pdf.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')

@@ -92,7 +92,7 @@
 	      {% csrf_token %}
 	        <div class="col-6 input-group">
 			  <select class="custom-select" name="filterdata" id="inputGroupSelect04" aria-label="Exemplo de select com botão addon">
-			    <option selected>Escolha um dia</option>
+			    <option value="">Escolha um dia</option>
 			    {% for data in data %}
 		        <option value="{{ data.data }}">{{ data.data }}</option>
 		        {% endfor %}

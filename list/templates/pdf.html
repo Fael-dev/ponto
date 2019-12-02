@@ -1,6 +1,7 @@
 {% load static %}
 <html>
 <head>
+    <title>Relatório</title>
 <style>
     @page {
         size: a4 portrait;
@@ -52,6 +53,13 @@
             <tr><td>Assinatura:</td><td><hr></td><td><hr></td></tr>
         </table>
     </div>
+    {% if data == 'todas' %}
+    {% else %}
+        <hr>
+        <center>
+          <h4>Filtro do dia: {{ data }}</h4>
+        </center>
+    {% endif %}
     <hr>
     <div class="main_content">
         <table class="table">
@@ -97,7 +105,7 @@
             </tr>
             {% for dia in dia %}
             <tr>
-                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.hrs_trabalhadas }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.total_horas }}</td>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.saida }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.hrs_trabalhadas }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.total_horas }}</td>
             </tr>
             {% endfor %}
             {% endif %}

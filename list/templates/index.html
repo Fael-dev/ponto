@@ -59,10 +59,10 @@
         
           {% else %}
               <tr align="middle" bgcolor="#ffabab"  class="hover-so">
-                <td> <a href="cadastro/{{ obj.id }}"><button class="btn-acao" title="Adicionar Objeto"><img src="{% static 'images/add.png' %}" class="btn-img"></button></a></td> <td> {{ obj.funcao }} </td><td>{{ obj.responsavel }}</td>
+                <td> <a href="cadastro/{{ obj.id }}"><button class="btn-acao" title="Adicionar Objeto"><img src="{% static 'images/add.png' %}" class="btn-img"></button></a></td> <td> - </td><td> - </td>
                 <td>  {{ obj.codigo }}  </td> <td> {{ obj.data_admissao }}  </td>
                 <td><a href="delete/{{ obj.id }}" onclick="return confirm('Deseja excluir esse Registro ?')"> <button class="btn-acao" title="Deletar Objeto" ><img src="{% static 'images/lixeira.png' %}" class="btn-img" ></button></a> </td>
-                <td><a href="historico/{{obj.codigo}}"><button class="btn-hist" title="historico"> <img src="{%static 'images/hist.png'%}" class="btn-img"></button></a></td>
+                <td> - </td>
               </tr>
              
           {% endif %}
