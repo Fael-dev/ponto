@@ -18,7 +18,6 @@
     }
     .table td{
         text-align: center;
-        padding:5px;
     }
     .table th{
         padding:5px;
@@ -26,10 +25,10 @@
         background-color:darkseagreen;
     }
     .aironnet{
-        background-color:darkgray;
+        background-color:black;
         padding:10px;
         margin-bottom: 30px;
-        color: brown;
+        color: white;
         font-size: 20px;
         text-align: center;
     }
@@ -42,24 +41,66 @@
     <div class="aironnet">
         Aironnet Systems
     </div>
-        <table width="500">
-            <tr><td>Nome</td><td> {{ func.nome }} </td><td>ID: </td><td>{{ func.pk }}</td><td>Data emissão</td><td>{{ data_emissao }}</td></tr>
-            <tr><td>Função</td><td>{{ func.funcao }}</td><td> Data de Admissão: </td><td>{{ func.data_admissao }}</td></tr>
+        <table>
+            <tr>
+                <td>Nome: {{ func.nome }}</td><td>ID:{{ func.pk }} </td><td>Data emissão: {{ data_emissao }}</td>
+            </tr>
+            <tr>
+                <td>Função: {{ func.funcao }}</td><td> Data de Admissão: {{ func.data_admissao }} </td><td>Carga Horária: {{ func.carga_horaria }} </td>
+            </tr>
             <tr></tr>
-            <tr><td>Assinatura:</td><td><hr></td><td><hr></td><td><hr></td></tr>
+            <tr><td>Assinatura:</td><td><hr></td><td><hr></td></tr>
         </table>
     </div>
     <hr>
     <div class="main_content">
         <table class="table">
+            {% if option == '1' %}
             <tr>
-                <th>Data</th> <th>Entrada</th> <th>Saída</th> <th>Intervalo</th> <th>Horas Trabalhadas</th> <th>Carga Horária</th> <th>Horas Extras</th> <th>Total de Horas</th>
+                <th>Data</th><th>Entrada</th><th>Saída</th><th>Intervalo</th><th>Horas Extras</th> <th>Total de Horas</th>
             </tr>
             {% for dia in dia %}
             <tr>
-                <td>{{ dia.data }}</td> <td>{{ dia.entrada }}</td> <td>{{ dia.saida }}</td> <td>{{ dia.intervalo }}</td> <td>{{ dia.hrs_trabalhadas }}</td> <td>{{ func.carga_horaria }}</td> <td>{{ dia.hora_extra }}</td> <td>{{ dia.total_horas }}</td>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.saida }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.total_horas }}</td>
             </tr>
             {% endfor %}
+            {% elif option == '2' %}
+            <tr>
+               <th>Data</th><th>Entrada</th><th>Saída</th> <th>Intervalo</th><th>Horas Extras</th> <th>Horas Trabalhadas</th>
+            </tr>
+            {% for dia in dia %}
+            <tr>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.saida }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.hrs_trabalhadas }}</td>
+            </tr>
+            {% endfor %}
+            {% elif option == '3' %}
+            <tr>
+               <th>Data</th><th>Entrada</th><th>Saída</th> <th>Intervalo</th><th>Total de Horas</th> <th>Horas Trabalhadas</th>
+            </tr>
+            {% for dia in dia %}
+            <tr>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.saida }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.total_horas }}</td><td>{{ dia.hrs_trabalhadas }}</td>
+            </tr>
+            {% endfor %}
+            {% elif option == '4' %}
+            <tr>
+                <th>Data</th><th>Entrada</th><th>Saída</th><th>Total de Horas</th><th>Horas Extra</th> <th>Horas Trabalhadas</th>
+            </tr>
+            {% for dia in dia %}
+            <tr>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.saida }}</td><td>{{ dia.total_horas }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.hrs_trabalhadas }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <th>Data</th><th>Entrada</th> <th>Saída</th><th>Intervalo</th><th>Horas Trabalhadas</th><th>Horas Extra</th><th>Total Horas</th>
+            </tr>
+            {% for dia in dia %}
+            <tr>
+                <td>{{ dia.data }}</td><td>{{ dia.entrada }}</td><td>{{ dia.intervalo }}</td><td>{{ dia.hrs_trabalhadas }}</td><td>{{ dia.hora_extra }}</td><td>{{ dia.total_horas }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
         </table>
     </div>
 

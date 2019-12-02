@@ -52,12 +52,12 @@
                           <h5 class="card-title"><b> Campos que vai ter:</b></h5>
                           <select name="selectcampos" id="selectcampos" class="form-control">
                               <option value="todos">Todos os campos</option>
-                              <option value="1"> Servidor - Objeto - Data e Hora </option>
-                              <option value="2"> Servidor - Antena - Objeto </option>
-                              <option value="3"> Servidor - Data e Hora - Antena </option>
-                              <option value="4"> Data e Hora - Antena - Objeto </option>
+                              <option value="1"> Intervalo - Hora Extra - Total Horas </option>
+                              <option value="2"> Intervalo - Hora Extra - Horas Trabalhadas </option>
+                              <option value="3"> Intervalo - Total Horas - Horas Trabalhadas  </option>
+                              <option value="4"> Total Horas - Horas Trabalhadas - Hora Extra </option>
                           </select>
-                          <span> *Código(Obrigatório)</span>
+                          <span> *Entrada e Saída são campos obrigatórios</span>
                         </div>
                     </div>
                     <div class="card" style="width: 100%;">
@@ -87,25 +87,26 @@
     <!-- ============================== TELA FILTRAR RELATÓRIO ========================== -->
     <hr>
     <!-- ======================== FILTRO ESCOLHER DIA E BOTÃO GERAR PDF =================== -->
-	<div class="col-6 filter_data">
+	<div class="col-12">
      <form method="POST">
-      <span class="badge badge-light">Escolher dia:</span>
-      	{% csrf_token %}
-	      <select name="filterdata" class="select_data">  
-		        <option value="">Escolha um dia</option>
-		        {% for data in data %}
+	      {% csrf_token %}
+	        <div class="col-6 input-group">
+			  <select class="custom-select" name="filterdata" id="inputGroupSelect04" aria-label="Exemplo de select com botão addon">
+			    <option selected>Escolha um dia</option>
+			    {% for data in data %}
 		        <option value="{{ data.data }}">{{ data.data }}</option>
 		        {% endfor %}
-	      </select>
-	      <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">
-	      	Ir
-	      </button>
+			  </select>
+			  <div class="input-group-append">
+			    <button class="btn btn-outline-secondary" type="submit">Ir</button>
+			  </div>
+			</div>
      </form>
   	</div>
-  	<center>
-    	<button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
-		<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
-    </center>
+	  		<center>
+	    	<button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
+			<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
+			</center>
   	<!-- ======================== FILTRO ESCOLHER DIA E GERAR PDF ======================== -->
 
   	<!-- ======================== TABELA COM INFORMAÇÕES DO DIA ========================= -->

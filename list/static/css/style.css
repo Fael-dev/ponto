@@ -182,6 +182,7 @@ a:hover{
 
 .badge{
 	font-size: 20px;
+	padding:5px;
 }
 /* ======================== BUTTON ==================  */
 
@@ -208,11 +209,7 @@ legend{
 	text-align: center;
 }
 .filter_data{
-	display: inline;
-}
-.select_data{
 	position: relative;
-	width: 200px;
-	height: 37px;
-	border-radius: 5px;
+	float:right;
+	right: 50px;
 }

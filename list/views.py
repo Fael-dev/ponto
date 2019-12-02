@@ -16,11 +16,7 @@ from django.http import HttpResponse
 '''
 	Função 'HOMEPAGE' recebe as informações enviadas pela antena e 
 	faz os tratamentos certos antes de salvar.
-			timestamp = datetime.timestamp(obj1.date)
-		    timesnow = datetime.timestamp(datetime.now())
-		    result = (timesnow - timestamp)
-		    dt_str = datetime.now()
-			dt = dt_str.strftime('%d-%m-%Y')
+	add ao repositório do Pedro
 '''
 def homepage(request):
 	template_name = 'homepage.html'
@@ -32,50 +28,57 @@ def homepage(request):
 		fml = form.save(commit=False)
 		func = Funcionario.objects.filter(codigo=fml.codigo).first()
 		if func:
-			hist = Ponto()
-			hist.codigo = fml.codigo
-			hist.data = datetime.now()
-			hist.dia = dt
-			hist.save()
-
-			# IFs DE ENTRADA/SAIDA PARA PREENCHIMENTO DA TABELA DIÁRIA.
-			p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
-			print(len(p))
-			if len(p) == 1: # SE O USUÁRIO PASSOU UMA VEZ, CADASTRA NO BANCO DIÁRIA A CHEGADA NA EMPRESA
-				ent = Ponto.objects.get(codigo=fml.codigo, dia=dt)
-				dia = Diaria()
-				dia.entrada = ent.data
-				dia.codigo = ent.codigo
-				dia.data = dt
-				dia.save()
-				print('ENTRADA')
-			elif len(p) == 3: # SE O USUÁRIO PASSOU TRES VEZES, É CALCULADO O INTERVALO DA SEGUNDA E TERCEIRA BATIDA E ACRESCENTADO NO BANCO DIÁRIA. 
-				dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
+			pt = Ponto.objects.filter(codigo=fml.codigo, dia=dt).last()
+			dtnow = datetime.timestamp(datetime.now())
+			dtbatida = datetime.timestamp(pt.data)
+			result = dtnow - dtbatida
+			if result >= 600:
+				hist = Ponto()
+				hist.codigo = fml.codigo
+				hist.data = datetime.now()
+				hist.dia = dt
+				hist.save()
+				# IFs DE ENTRADA/SAIDA PARA PREENCHIMENTO DA TABELA DIÁRIA.
 				p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
-				saida = datetime.timestamp(p[1].data)
-				chegada = datetime.timestamp(p[2].data)
-				s = datetime.fromtimestamp(saida)
-				c = datetime.fromtimestamp(chegada)
-				dia.intervalo = c.hour - s.hour
-				dia.save()
-				print('INTERVALO')
-			elif len(p) == 4: # SE O USUÁRIO PASSOU QUATRO VEZES, CADASTRA NO BANCO DIÁRIA O TÉRMINO DO EXPEDIENTE NA EMPRESA
-				dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
-				inicio = datetime.timestamp(p[0].data)
-				fim = datetime.timestamp(p[3].data)
-				intervalo = float(dia.intervalo)
-				total = fim - inicio
-				t = datetime.fromtimestamp(total)
-				i = datetime.fromtimestamp(intervalo)
-				dia.saida = p[3].data
-				dia.total_horas = t.hour
-				dia.hrs_trabalhadas = t.hour - i.hour
-				dia.hora_extra = dia.hrs_trabalhadas - func.carga_horaria
-				dia.save()
-				print('SAÍDA')
-				
+				print(len(p))
+				if len(p) == 1: # SE O USUÁRIO PASSOU UMA VEZ, CADASTRA NO BANCO DIÁRIA A CHEGADA NA EMPRESA
+					ent = Ponto.objects.get(codigo=fml.codigo, dia=dt)
+					dia = Diaria()
+					dia.entrada = ent.data
+					dia.codigo = ent.codigo
+					dia.data = dt
+					dia.save()
+					print('ENTRADA')
+				elif len(p) == 3: # SE O USUÁRIO PASSOU TRES VEZES, É CALCULADO O INTERVALO DA SEGUNDA E TERCEIRA BATIDA E ACRESCENTADO NO BANCO DIÁRIA. 
+					dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
+					p = Ponto.objects.filter(codigo=fml.codigo, dia=dt)
+					saida = datetime.timestamp(p[1].data)
+					chegada = datetime.timestamp(p[2].data)
+					s = datetime.fromtimestamp(saida)
+					c = datetime.fromtimestamp(chegada)
+					dia.intervalo = c.hour - s.hour
+					dia.save()
+					print('INTERVALO')
+				elif len(p) == 4: # SE O USUÁRIO PASSOU QUATRO VEZES, CADASTRA NO BANCO DIÁRIA O TÉRMINO DO EXPEDIENTE NA EMPRESA
+					dia = Diaria.objects.get(codigo=fml.codigo, data=dt)
+					inicio = datetime.timestamp(p[0].data)
+					fim = datetime.timestamp(p[3].data)
+					intervalo = float(dia.intervalo)
+					total = fim - inicio
+					t = datetime.fromtimestamp(total)
+					i = datetime.fromtimestamp(intervalo)
+					dia.saida = p[3].data
+					dia.total_horas = t.hour
+					dia.hrs_trabalhadas = t.hour - i.hour
+					dia.hora_extra = dia.hrs_trabalhadas - func.carga_horaria
+					dia.save()
+					print('SAÍDA')
+					
+				else:
+					print('else')
 			else:
-				print('else')
+				form = FuncForm()
+
 		else:
 			fml.save()
 	else:
@@ -202,13 +205,14 @@ def historico(request, codigo):
 		hist = Ponto.objects.filter(codigo=codigo, dia=filtro_data)
 		dia = Diaria.objects.filter(codigo=codigo, data=filtro_data).first()
 	else:	
-		hist = Ponto.objects.filter(codigo=codigo)
-		dia = Diaria.objects.filter(codigo=codigo).first()
+		dia = Diaria.objects.filter(codigo=codigo).last()
+		hist = Ponto.objects.filter(codigo=codigo, dia=dia.data)
 
-	individuo = Funcionario.objects.filter(codigo=codigo).first()
+	individuo = Funcionario.objects.get(codigo=codigo)
 	data = Diaria.objects.filter(codigo=codigo)
 	if not hist:
 		return render(request, '404.html')
+
 
 	template_name = 'historico.html'
 	return render(request, template_name, {'hist':hist,'individuo':individuo, 'dia':dia, 'data':data})
@@ -220,17 +224,35 @@ def historico(request, codigo):
 def gerar_pdf(request, codigo):
 	func = Funcionario.objects.get(codigo=codigo)
 	data_emissao = datetime.now()
-
 	filtro_select = request.POST.get('selectdata')
 	option = request.POST.get('selectcampos')
-
-	if filtro_select == 'todas':
-		dia = Diaria.objects.filter(codigo=codigo).order_by('-codigo')
+	if option == '1':
+		if filtro_select == 'todas': 
+			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hora_extra', 'total_horas')
+		else:
+			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hora_extra', 'total_horas')
+	elif option == '2':
+		if filtro_select == 'todas': 
+			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hora_extra', 'hrs_trabalhadas')
+		else:
+			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hora_extra', 'hrs_trabalhadas')
+	elif option == '3':
+		if filtro_select == 'todas': 
+			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','intervalo', 'hrs_trabalhadas', 'total_horas')
+		else:
+			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','intervalo', 'hrs_trabalhadas', 'total_horas')
+	elif option == '4':
+		if filtro_select == 'todas': 
+			dia = Diaria.objects.filter(codigo=codigo).values('data','entrada','saida','total_horas', 'hora_extra', 'hrs_trabalhadas')
+		else:
+			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).values('data','entrada','saida','total_horas', 'hora_extra', 'hrs_trabalhadas')
 	else:
-		dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select).order_by('-codigo')
+		if filtro_select == 'todas': 
+			dia = Diaria.objects.filter(codigo=codigo)
+		else:
+			dia = Diaria.objects.filter(codigo=codigo ,data=filtro_select)
 
-
-	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func}
+	data = {'dia': dia, 'data_emissao':data_emissao, 'func':func, 'option':option}
 	pdf = render_to_pdf('pdf.html', data)
 
 	return HttpResponse(pdf, content_type='application/pdf')
