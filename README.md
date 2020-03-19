@@ -1,21 +1,17 @@
-Projeto RFID.
+Projeto Ponto eletrônico com cartão.
 
- Este projeto possui a finalidade de, ao ser conectado com uma antena RFID (nome provisório),
-consegui captar informações de cartões ou quaisquer objetos com um chip sensorial de frequência 125 Hz
-que, ao serem detectados pelo sistema, seu código, junto com sua antena, servidor e horário, serão
-devidamente tratados e encaminhados para um banco de dados do sistema e renderizados devidamente.
+Instalando o gerenciador de pacotes PIP:
 
-Repositório Pessoal
+Todo o processo de instalação do PIP pode ser visto na sua página(https://pip.pypa.io/en/stable/installing/) oficial.
 
-Requerimentos:
-|
-django |
-django-crispy-forms |
-xhtml2pdf |
-django-xhtml2pdf |
+Bibliotecas necessárias:
 
+pip install django==2.2.5
+pip install django-crispy-forms==1.8.0
+pip install xhtml2pdf==0.2.3 
+pip install requests==2.22.0    
+pip install Pillow==6.1.0
 
-Melhorar Designer, melhorar banco e funções...
 
 
 
