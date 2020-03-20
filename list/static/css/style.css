@@ -1,3 +1,8 @@
+/* CLASSE PRINCIPAL */
+.main{
+	width: 100%;
+	height: 100%;
+}
 /* ========== TABELA DA LISTA DOS CÓDIGOS  ======== */
 .table{
 	margin-top: 0px;
@@ -71,7 +76,7 @@
 /* ========== RODAPÉ ============= */
 
 .footer{
-	position: fixed;
+	position: relative;
 	left: 0px;
 	margin:0px;
 	width: 100%;
@@ -212,4 +217,12 @@ legend{
 	position: relative;
 	float:right;
 	right: 50px;
+}
+@media screen and (max-width: 1024px) and (max-height: 768px){
+	.form-inline{
+		width: 50%;
+	}
+	input[type="search"].form-control{
+		width: 75%;
+	}
 }

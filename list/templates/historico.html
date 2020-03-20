@@ -87,10 +87,10 @@
     <!-- ============================== TELA FILTRAR RELATÓRIO ========================== -->
     <hr>
     <!-- ======================== FILTRO ESCOLHER DIA E BOTÃO GERAR PDF =================== -->
-	<div class="col-12">
-     <form method="POST">
+	
+     <form method="POST" class="col-12">
 	      {% csrf_token %}
-	        <div class="col-6 input-group">
+	        <div class="col-12 input-group">
 			  <select class="custom-select" name="filterdata" id="inputGroupSelect04" aria-label="Exemplo de select com botão addon">
 			    <option value="">Escolha um dia</option>
 			    {% for data in data %}
@@ -102,11 +102,12 @@
 			  </div>
 			</div>
      </form>
-  	</div>
-	  		<center>
-	    	<button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
-			<button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
-			</center>
+	<center>
+	 <button class="badge badge-dark" class="btn btn-dark" type="button" data-toggle="collapse" data-target="#infodia" aria-expanded="false" aria-controls="infodia">Informações do dia</button>
+	 <button type="button" class="badge badge-dark" data-toggle="modal" data-target=".bd-example-modal-lg"><img src="{% static 'images/pdf.png' %}" class="icon_menu">Relatório</button>
+  	</center>
+	
+
   	<!-- ======================== FILTRO ESCOLHER DIA E GERAR PDF ======================== -->
 
   	<!-- ======================== TABELA COM INFORMAÇÕES DO DIA ========================= -->
